@@ -39,7 +39,7 @@ pip-log.txt
 # No subir archivos pesados o datasets crudos
 data_science/**/data/*.csv
 !data_science/**/data/stations_loc.csv   # excepción si quieres conservar este
-project/model/stories_dataset.csv
+!project/model/stories_dataset.csv
 project/model/*.joblib
 
 # =========================================
