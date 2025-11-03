@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumidor de Documentos con IA</title>
+    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1"></script>
+    <style>
+        /* (El CSS no cambia) */
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; background-color: #f8f9fa; color: #212529; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        #container { background-color: #ffffff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); padding: 30px 40px; width: 100%; max-width: 800px; }
+        h1 { color: #0056b3; text-align: center; border-bottom: 2px solid #e9ecef; padding-bottom: 15px; margin-bottom: 25px; }
+        .upload-section { background-color: #f1f3f5; border: 2px dashed #ced4da; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 20px; }
+        input[type="file"] { display: none; }
+        label.file-label { background-color: #007bff; color: white; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
+        label.file-label:hover { background-color: #0056b3; }
+        #file-name { margin-top: 10px; font-style: italic; color: #495057; }
+        button { display: block; width: 100%; padding: 12px; font-size: 1.1rem; font-weight: bold; color: #fff; background-color: #28a745; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s; }
+        button:disabled { background-color: #adb5bd; cursor: not-allowed; }
+        #status { text-align: center; margin-top: 15px; color: #6c757d; }
+        .result-box { margin-top: 25px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
+        h2 { color: #0056b3; margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>📑 Resumidor de Documentos IA</h1>
+        <div class="upload-section">
+            <label for="file-upload" class="file-label">Seleccionar Archivo (.txt)</label>
+            <input id="file-upload" type="file" accept=".txt">
+            <p id="file-name">Ningún archivo seleccionado</p>
+        </div>
+        <button id="summarizeButton" disabled>Cargando Modelos...</button>
+        <p id="status">Por favor, espera. La carga inicial puede tardar unos minutos.</p>
+        <div id="summary-container" class="result-box" style="display: none;">
+            <h2>✨ Resumen Generado</h2>
+            <p id="summaryOutput"></p>
+        </div>
+        <div id="concepts-container" class="result-box" style="display: none;">
+            <h2>🔑 Conceptos Clave</h2>
+            <p id="conceptsOutput"></p>
+        </div>
+    </div>
+
+    <script>
+        const fileUpload = document.getElementById('file-upload');
+        const fileNameDisplay = document.getElementById('file-name');
+        const summarizeButton = document.getElementById('summarizeButton');
+        const statusDisplay = document.getElementById('status');
+        const summaryContainer = document.getElementById('summary-container');
+        const summaryOutput = document.getElementById('summaryOutput');
+        const conceptsContainer = document.getElementById('concepts-container');
+        const conceptsOutput = document.getElementById('conceptsOutput');
+        
+        let documentText = '';
+
+        const AI = {
+            summarizer: null,
+            ner: null,
+            languageDetector: null,
+            
+            async init() {
+                const { pipeline } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1');
+                
+                statusDisplay.textContent = 'Cargando modelos...';
+                
+                // ✅ Cargamos un modelo adicional para identificar el idioma
+                [this.summarizer, this.ner, this.languageDetector] = await Promise.all([
+                    pipeline('summarization', 'Xenova/mt5-small'),
+                    pipeline('token-classification', 'Xenova/bert-base-multilingual-cased-ner-hrl'),
+                    pipeline('text-classification', 'Xenova/distilbert-base-nli-stsb-mean-tokens') 
+                ]);
+            },
+
+            async detectLanguageAndSummarize(text) {
+                if (!this.summarizer || !this.languageDetector) throw new Error("Modelos no inicializados.");
+
+                // 1. Detectamos el idioma del texto.
+                const langDetectionResult = await this.languageDetector(text.substring(0, 500), { // Usamos solo el inicio para eficiencia
+                    topk: 1 
+                });
+                const lang = langDetectionResult[0].label; // ej: 'eng', 'spa', 'fra'
+                
+                // Mapeamos códigos de idioma a nombres completos para el prefijo.
+                const langMap = { 'eng': 'English', 'spa': 'Spanish', 'fra': 'French', 'deu': 'German', 'por': 'Portuguese' };
+                const fullLang = langMap[lang] || 'text'; // Usamos 'text' como fallback.
+                
+                statusDisplay.textContent = `Idioma detectado: ${fullLang}. Resumiendo...`;
+
+                // 2. Creamos un prefijo dinámico para el modelo de resumen.
+                const prefix = `summarize ${fullLang}: `;
+                const output = await this.summarizer(prefix + text, {
+                    min_length: 50,
+                    max_length: 200,
+                });
+                
+                // 3. Limpiamos la salida para evitar caracteres extraños.
+                const cleanSummary = output[0].summary_text.replace(/<extra_id_\d+>|\.|\(|\)|锘|苊/g, '').trim();
+                return cleanSummary;
+            },
+
+            async extractKeyConcepts(text) {
+                if (!this.ner) throw new Error("Modelo NER no inicializado.");
+                const entities = await this.ner(text);
+                const concepts = new Set();
+                entities
+                    .filter(e => e.score > 0.9 && ['B-PER', 'I-PER', 'B-LOC', 'I-LOC', 'B-ORG', 'I-ORG'].includes(e.entity))
+                    .forEach(e => concepts.add(e.word.replace(/##/g, '')));
+                
+                // Unimos conceptos fragmentados (ej: "Valle", "del", "Cauca")
+                const joinedConcepts = Array.from(concepts).join(' ').replace(/\s+/g, ' ').split(' B-').map(c => c.replace(/ I-/g, ' ').trim());
+                return Array.from(new Set(joinedConcepts.filter(c => c.length > 2)));
+            }
+        };
+
+        async function main() {
+            try {
+                await AI.init();
+                statusDisplay.textContent = '¡Listo! Selecciona un archivo y haz clic en resumir.';
+                summarizeButton.textContent = 'Analizar Documento';
+            } catch (error) {
+                console.error("Error al cargar modelos:", error);
+                statusDisplay.textContent = 'Error al cargar modelos. Intenta recargar.';
+            }
+        }
+
+        fileUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                documentText = '';
+                fileNameDisplay.textContent = 'Ningún archivo seleccionado';
+                summarizeButton.disabled = true;
+                return;
+            }
+
+            fileNameDisplay.textContent = `Archivo: ${file.name}`;
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                // ✅ Leemos el archivo y eliminamos el BOM (causante de '锘')
+                let rawText = e.target.result;
+                if (rawText.startsWith('\uFEFF')) {
+                    rawText = rawText.substring(1);
+                }
+                documentText = rawText.replace(/\s+/g, ' ').trim();
+                
+                if (AI.summarizer) { // Habilitamos el botón si los modelos están listos.
+                    summarizeButton.disabled = false;
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        summarizeButton.addEventListener('click', async () => {
+            if (!documentText) return;
+
+            summarizeButton.disabled = true;
+            summarizeButton.textContent = 'Analizando...';
+            summaryContainer.style.display = 'none';
+            conceptsContainer.style.display = 'none';
+            statusDisplay.textContent = 'Detectando idioma...';
+
+            try {
+                const [summary, concepts] = await Promise.all([
+                    AI.detectLanguageAndSummarize(documentText),
+                    AI.extractKeyConcepts(documentText)
+                ]);
+
+                summaryOutput.textContent = summary;
+                conceptsOutput.textContent = concepts.join(' | ');
+                
+                summaryContainer.style.display = 'block';
+                conceptsContainer.style.display = 'block';
+                statusDisplay.textContent = 'Análisis completo.';
+            } catch (error) {
+                console.error("Error en el análisis:", error);
+                statusDisplay.textContent = 'Ocurrió un error durante el análisis.';
+            } finally {
+                summarizeButton.disabled = false;
+                summarizeButton.textContent = 'Analizar Documento';
+            }
+        });
+        
+        main();
+    </script>
+</body>
+</html>

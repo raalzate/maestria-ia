@@ -1,0 +1,100 @@
+# =========================================
+# 🔧 SISTEMA
+# =========================================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.bak
+*.old
+*.lock
+
+# =========================================
+# 🐍 PYTHON
+# =========================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+.env
+.venv
+venv/
+env/
+.Python
+pip-log.txt
+
+# =========================================
+# 📦 JUPYTER NOTEBOOKS
+# =========================================
+# Evita archivos de checkpoints
+.ipynb_checkpoints/
+
+# =========================================
+# 📊 DATOS (DATASETS, RAW DATA, RESULTADOS)
+# =========================================
+# No subir archivos pesados o datasets crudos
+data_science/**/data/*.csv
+!data_science/**/data/stations_loc.csv   # excepción si quieres conservar este
+project/model/stories_dataset.csv
+project/model/*.joblib
+
+# =========================================
+# 🐘 BASES DE DATOS / DUMPS
+# =========================================
+*.sql
+*.sqlite3
+*.db
+
+# =========================================
+# 🐳 DOCKER / PODMAN
+# =========================================
+*.pid
+*.seed
+*.pid.lock
+# Permitimos docker-compose.yml para versionado
+!docker-compose.yml
+
+# =========================================
+# ⚙️ NODE / JAVASCRIPT
+# =========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+dist/
+build/
+.cache/
+.next/
+out/
+
+# =========================================
+# 📁 ENTORNOS / MODELOS / OUTPUTS
+# =========================================
+project/model/fix_ml/
+*.joblib
+*.h5
+*.pt
+*.pth
+*.onnx
+*.model
+*.sav
+*.pkl
+
+# =========================================
+# 🧪 OTROS (TEMPORALES / EXPORTS)
+# =========================================
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# =========================================
+# 📜 PERSONAL
+# =========================================
+text.txt
