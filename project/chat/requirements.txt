@@ -5,3 +5,7 @@ edge-tts
 transformers
 torch
 sentencepiece
+langchain
+langgraph
+langchain-community
+accelerate

@@ -1,7 +1,7 @@
 import os
 
 def load_html_template():
-    """Carga el template HTML para el reproductor de karaoke."""
+    """Carga el template HTML para el reproductor intérprete."""
     template_path = os.path.join("public", "template.html")
     if not os.path.exists(template_path):
         # Fallback simple si no existe el archivo

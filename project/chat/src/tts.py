@@ -40,9 +40,9 @@ async def create_simple_audio(text):
     
     return f"/public/{filename}"
 
-async def create_karaoke_page(text):
+async def create_interpreter_page(text):
     """
-    Genera un archivo HTML con audio sincronizado (karaoke) usando EdgeTTS.
+    Genera un archivo HTML con audio sincronizado (intérprete) usando EdgeTTS.
     Retorna la URL relativa del archivo generado.
     """
     # Limpiar texto de markdown básico para que el TTS no lea asteriscos
@@ -82,7 +82,7 @@ async def create_karaoke_page(text):
     final_html = html_content.replace("__B64_AUDIO__", b64_audio).replace("__WORD_MAP__", json_map)
 
     # Guardar archivo único
-    filename = f"karaoke_{uuid.uuid4().hex[:8]}.html"
+    filename = f"interpreter_{uuid.uuid4().hex[:8]}.html"
     filepath = os.path.join("public", filename)
     
     # Asegurar que public existe

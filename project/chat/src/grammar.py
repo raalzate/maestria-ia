@@ -1,31 +1,43 @@
-from src.llm import generate_response
+from transformers import pipeline
+import asyncio
 
-async def check_grammar(text):
-    """
-    Check and correct grammar using Llama-3 LLM.
-    Returns (corrected_text, has_errors, corrections_list)
-    """
-    # Usar Llama-3 para corrección gramatical
-    grammar_prompt = (
-        f"Check this English sentence for grammar errors and provide ONLY the corrected version:\n\n"
-        f"Original: {text}\n\n"
-        f"Rules:\n"
-        f"- If the sentence is grammatically correct, return it EXACTLY as is\n"
-        f"- If there are errors, return ONLY the corrected sentence\n"
-        f"- Do NOT add explanations or extra text\n"
-        f"- Keep the same meaning and style\n\n"
-        f"Corrected:"
-    )
+# Cache del pipeline
+_grammar_pipeline = None
+
+def get_grammar_checker():
+    global _grammar_pipeline
+    if _grammar_pipeline is None:
+        print("⏳ Loading Grammar Correction Pipeline (T5)...")
+        try:
+            # device=-1 fuerza el uso de CPU y evita problemas de MPS/Meta
+            _grammar_pipeline = pipeline(
+                "text2text-generation",
+                model="vennify/t5-base-grammar-correction",
+                device=-1 
+            )
+        except Exception as e:
+            print(f"❌ Error loading T5 pipeline: {e}")
+            return None
+            
+    return _grammar_pipeline
+
+def _check_grammar_sync(text):
+    """Synchronous version of grammar check using pipeline."""
+    pipe = get_grammar_checker()
     
-    corrected_text = ""
+    if not pipe:
+        return text, False, []
     
     # Generar corrección
-    async for token in generate_response(grammar_prompt, "You are a grammar expert. Reply only with the corrected sentence."):
-        corrected_text += token
+    input_text = f"grammar: {text}"
+    try:
+        results = pipe(input_text, max_length=512, num_beams=4, early_stopping=True)
+        corrected_text = results[0]['generated_text']
+    except Exception as e:
+        print(f"❌ Error during grammar check: {e}")
+        return text, False, []
     
-    corrected_text = corrected_text.strip()
-    
-    # Detectar si hay cambios significativos
+    # Detectar si hay cambios
     has_errors = text.strip().lower() != corrected_text.strip().lower()
     
     corrections = []
@@ -36,3 +48,10 @@ async def check_grammar(text):
         })
     
     return corrected_text, has_errors, corrections
+
+async def check_grammar(text):
+    """
+    Check and correct grammar using T5 pipeline (Async wrapper).
+    Returns (corrected_text, has_errors, corrections_list)
+    """
+    return await asyncio.to_thread(_check_grammar_sync, text)
