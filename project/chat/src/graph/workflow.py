@@ -7,6 +7,17 @@ from src.graph.nodes.tutor import tutor_node
 
 from src.graph.nodes.grammar_checker import grammar_node
 
+
+ def route_grammar(state):
+        if state.get("grammar_error"):
+            return END  
+        return "assessor"
+
+    def route_step(state):
+        if state.get("next_step") == "new_topic":
+            return "curriculum"
+        return "tutor"  
+
 def create_graph():
     workflow = StateGraph(AgentState)
     
@@ -20,29 +31,18 @@ def create_graph():
     # Define edges
     workflow.set_entry_point("grammar")
     
-    # Grammar check routing
-    def route_grammar(state):
-        if state.get("grammar_error"):
-            return "tutor" # Go directly to tutor for correction
-        return "assessor" # Continue normal flow
-        
     workflow.add_conditional_edges(
         "grammar",
         route_grammar,
         {
-            "tutor": "tutor",
+            END: END,           
             "assessor": "assessor"
         }
     )
     
     workflow.add_edge("assessor", "memory")
     
-    # Conditional edge logic for topic
-    def route_step(state):
-        if state.get("next_step") == "new_topic":
-            return "curriculum"
-        return "tutor"
-        
+
     workflow.add_conditional_edges(
         "memory",
         route_step,

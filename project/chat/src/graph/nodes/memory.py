@@ -20,7 +20,7 @@ def memory_node(state: AgentState):
     )
     
     result = llm.invoke(prompt).strip()
-    
+    print(result)
     new_memories = []
     if result != "NONE":
         items = [item.strip() for item in result.split(',')]

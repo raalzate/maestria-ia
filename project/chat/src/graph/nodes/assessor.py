@@ -23,7 +23,7 @@ def assessor_node(state: AgentState):
     )
     
     intent = llm.invoke(prompt).strip().upper()
-    
+    print(intent)
     # Determinar si es lección
     is_lesson = "REQUEST" in intent
     
