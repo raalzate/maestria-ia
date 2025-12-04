@@ -178,8 +178,7 @@ async def process_audio():
         await cl.Message(content="❌ I heard silence. Please try speaking louder.").send()
         return
 
-    # Procesar como mensaje de usuario
-    await cl.Message(content=f"🗣️ **You said:** {text}").send()
+    # Procesar como mensaje de usuario (sin mostrar "You said" para experiencia más limpia)
     await main(cl.Message(content=text, author="User"))
 
     
@@ -207,17 +206,42 @@ async def main(message: cl.Message):
     level = cl.user_session.get("user_level", "Intermediate")
     topic = cl.user_session.get("current_topic", "General Conversation")
 
-    # Prompt Dinámico (SIN instrucciones de sugerencias)
-    system_prompt = (
-        f"You are Emma, a professional English Tutor. Current Level: {level}. Current Topic: {topic}.\n"
-        "Your goal is to help the user improve their English skills.\n"
-        "1. Always answer in English.\n"
-        "2. If the user makes a grammar mistake, politely correct it at the end of your response.\n"
-        "3. Keep your responses concise and encouraging.\n"
-        f"4. Adapt your vocabulary to the {level} level.\n"
-        "5. If the user asks for a topic, suggest 3 interesting topics based on their level.\n"
-        "6. If the conversation stalls, suggest a question related to the current topic."
+    # Detectar si el usuario está haciendo una petición de aprendizaje
+    request_check_prompt = (
+        f"User said: '{user_input}'. "
+        "Is this a REQUEST for learning content, explanations, or lists? "
+        "Examples of requests: 'teach me...', 'give me...', 'what are...', 'explain...', 'show me...', 'list...' "
+        "Reply 'YES' only for direct learning requests. "
+        "Reply 'NO' for casual conversation, greetings, or personal questions."
     )
+    
+    request_decision = ""
+    async for token in generate_response(request_check_prompt, "You are a helpful assistant."):
+        request_decision += token
+    
+    is_request = "YES" in request_decision.upper()
+    
+    # Ajustar el prompt según si es petición o conversación
+    if is_request:
+        # Modo completo para peticiones educativas
+        system_prompt = (
+            f"You are Emma, a professional English Tutor. Current Level: {level}. Current Topic: {topic}.\n"
+            "The user is requesting learning content. Provide a complete, detailed response.\n"
+            "1. Always answer in English.\n"
+            "2. Be thorough and educational.\n"
+            f"3. Adapt your vocabulary to the {level} level.\n"
+            "4. Provide examples and explanations."
+        )
+    else:
+        # Modo conciso para conversación
+        system_prompt = (
+            f"You are Emma, a friendly English conversation partner. Current Level: {level}.\n"
+            "Keep your responses SHORT and NATURAL (1-2 sentences maximum).\n"
+            "1. Always answer in English.\n"
+            "2. Be conversational and warm, not formal.\n"
+            f"3. Use {level} level vocabulary.\n"
+            "4. If you notice a grammar mistake, mention it briefly at the end."
+        )
     
     # Mostrar indicador de escritura
     msg = cl.Message(content="✍️ _Emma is writing..._", author="Emma")
@@ -228,21 +252,8 @@ async def main(message: cl.Message):
     async for token in generate_response(user_input, system_prompt):
         full_resp += token
 
-    # Preguntar a la IA si esta respuesta debería ser una "lección" completa
-    lesson_check_prompt = (
-        f"Based on this conversation - User: '{user_input}' and Emma's response: '{full_resp[:150]}...', "
-        "should this be expanded into a detailed lesson with examples and explanations? "
-        "Reply ONLY with 'YES' if it involves grammar corrections, new vocabulary, or complex explanations. "
-        "Reply 'NO' if it's just casual conversation or simple acknowledgment."
-    )
-    
-    lesson_decision = ""
-    async for token in generate_response(lesson_check_prompt, "You are a helpful assistant."):
-        lesson_decision += token
-    
-    is_lesson = "YES" in lesson_decision.upper()
-    
-    if is_lesson:
+    # Solo hacer lección completa si es una petición de aprendizaje
+    if is_request:
         # MODO LECCIÓN: Karaoke completo con todos los extras
         karaoke_url = await create_karaoke_page(full_resp)
         if karaoke_url:
