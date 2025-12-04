@@ -12,6 +12,7 @@ from src.audio import transcribe_audio, get_whisper
 from src.llm import get_llm, generate_response
 from src.tts import create_karaoke_page, create_simple_audio
 from src.utils import ensure_directories
+from src.grammar import check_grammar
 
 # =================================================================================
 # 1. CONFIGURACIÓN INICIAL
@@ -187,24 +188,36 @@ async def process_audio():
 async def main(message: cl.Message):
     user_input = message.content
     
-    # Manejo de archivos de audio subidos (Drag & Drop)
-    audio_file = next((el for el in message.elements if "audio" in el.mime), None)
-    if audio_file:
-        load = cl.Message(content="👂 Processing uploaded file...", author="System")
-        await load.send()
-        transcribed_text, error = await cl.make_async(transcribe_audio)(audio_file.path)
-        await load.remove()
-        
-        if error:
-            await cl.Message(f"❌ Error processing file: {error}").send()
-            return
-            
-        user_input = transcribed_text
-        await cl.Message(f"🗣️ **Transcribed:** {user_input}").send()
-
     # Recuperar estado
     level = cl.user_session.get("user_level", "Intermediate")
     topic = cl.user_session.get("current_topic", "General Conversation")
+    
+    # PASO 1: Corrección gramatical
+    corrected_text, has_errors, corrections = await check_grammar(user_input)
+    
+    # Si hay errores, Emma solo menciona las correcciones (sin lección completa)
+    if has_errors:
+        correction_msg = (
+            f"I noticed a small grammar issue. You said:\n\n"
+            f"_\"{user_input}\"_\n\n"
+            f"A better way to say it would be:\n\n"
+            f"**\"{corrected_text}\"**\n\n"
+            f"Try saying it again! 😊"
+        )
+        
+        msg = cl.Message(content=correction_msg, author="Emma")
+        await msg.send()
+        
+        # Generar audio simple para la corrección
+        audio_url = await create_simple_audio(correction_msg)
+        if audio_url:
+            audio_html = f'<audio controls autoplay style="width:100%; margin-top:10px;"><source src="{audio_url}" type="audio/mp3"></audio>'
+            msg.content = correction_msg + "\n\n" + audio_html
+            await msg.update()
+        
+        return  # No continuar con el flujo normal
+    
+    # PASO 2: Continuar con el flujo normal (sin errores gramaticales)
 
     # Detectar si el usuario está haciendo una petición de aprendizaje
     request_check_prompt = (
@@ -322,7 +335,7 @@ async def main(message: cl.Message):
         # Generar solo audio simple (sin karaoke)
         audio_url = await create_simple_audio(full_resp)
         if audio_url:
-            # Agregar solo el reproductor de audio simple
-            audio_html = f'<audio controls autoplay style="width:100%; margin-top:10px;"><source src="{audio_url}" type="audio/mp3"></audio>'
+            # Reproductor de audio oculto (solo se escucha, no se ve)
+            audio_html = f'<audio autoplay style="display:none;"><source src="{audio_url}" type="audio/mp3"></audio>'
             msg.content = full_resp + "\n\n" + audio_html
             await msg.update()

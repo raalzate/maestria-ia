@@ -18,10 +18,11 @@ def get_llm():
         _llm_cache = Llama(model_path=MODEL_PATH, n_gpu_layers=-1, n_ctx=4096, verbose=False)
     return _llm_cache
 
-async def generate_response(user_input, system_prompt="You are a helpful assistant."):
+async def generate_response(user_input, system_prompt="You are a helpful assistant.", is_sync=False):
     """
     Genera una respuesta usando el modelo Llama.
     Retorna un generador asíncrono para streaming.
+    Si is_sync=True, funciona de forma síncrona (para corrección gramatical).
     """
     llm = get_llm()
     if not llm:
