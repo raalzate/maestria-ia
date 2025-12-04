@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Karaoke Player</title>
+    <style>
+        :root {
+            --bg-color: #1a1b26;
+            --card-bg: #24283b;
+            --text-color: #a9b1d6;
+            --highlight-color: #7aa2f7;
+            --active-bg: #3d59a1;
+            --active-text: #ffffff;
+            --accent: #bb9af7;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            color: var(--text-color);
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Reproductor */
+        audio {
+            width: 100%;
+            height: 40px;
+            border-radius: 20px;
+            outline: none;
+            filter: invert(0.9) hue-rotate(180deg);
+            /* Dark mode hack for default player */
+        }
+
+        /* Área de Texto */
+        .text-box {
+            flex: 1;
+            overflow-y: auto;
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--text-color);
+            padding-right: 12px;
+            white-space: pre-wrap;
+            scrollbar-width: thin;
+            scrollbar-color: var(--active-bg) transparent;
+        }
+
+        .text-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .text-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .text-box::-webkit-scrollbar-thumb {
+            background-color: var(--active-bg);
+            border-radius: 3px;
+        }
+
+        /* Palabras individuales */
+        .word {
+            display: inline-block;
+            margin-right: 5px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-color);
+        }
+
+        .word:hover {
+            background: rgba(122, 162, 247, 0.1);
+            color: var(--highlight-color);
+        }
+
+        /* Highlight Activo */
+        .active {
+            background-color: var(--active-bg);
+            color: var(--active-text);
+            font-weight: 600;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(61, 89, 161, 0.4);
+        }
+
+        /* --- ESTILOS ESTRUCTURALES --- */
+        .title-block {
+            display: block;
+            width: 100%;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--accent);
+            border-bottom: 2px solid var(--active-bg);
+            padding-bottom: 4px;
+        }
+
+        .list-item {
+            display: block;
+            width: 100%;
+            margin-left: 24px;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        .list-item::before {
+            content: "•";
+            position: absolute;
+            left: -15px;
+            color: var(--highlight-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="lyrics" class="text-box"></div>
+        <audio id="player" controls autoplay>
+            <source src="data:audio/mp3;base64,__B64_AUDIO__" type="audio/mp3">
+        </audio>
+    </div>
+
+    <script>
+        const wordMap = __WORD_MAP__;
+        const player = document.getElementById('player');
+        const lyrics = document.getElementById('lyrics');
+
+        // Renderizado
+        wordMap.forEach((item, index) => {
+            const span = document.createElement('span');
+            let text = item.word;
+            let clean = text.trim();
+
+            span.id = 'w-' + index;
+            span.className = 'word';
+
+            // --- DETECCIÓN DE FORMATO ---
+            if (clean.startsWith("##") || clean.startsWith("Concept:")) {
+                span.classList.add('title-block');
+                text = text.replace(/#/g, '').replace('Concept:', '').trim();
+            }
+            else if (clean.startsWith("-") || clean.startsWith("•") || /^\d+\./.test(clean)) {
+                span.classList.add('list-item');
+            }
+
+            span.innerText = text + " ";
+            span.onclick = () => { player.currentTime = item.start; player.play(); };
+            lyrics.appendChild(span);
+        });
+
+        // Sincronización
+        player.ontimeupdate = () => {
+            const t = player.currentTime;
+            wordMap.forEach((item, index) => {
+                const el = document.getElementById('w-' + index);
+                if (el) {
+                    if (t >= item.start && t < item.end) {
+                        if (!el.classList.contains('active')) {
+                            el.classList.add('active');
+                            el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }
+                    } else {
+                        el.classList.remove('active');
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>

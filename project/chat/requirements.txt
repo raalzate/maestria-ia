@@ -1,0 +1,4 @@
+chainlit
+llama-cpp-python
+faster-whisper
+edge-tts

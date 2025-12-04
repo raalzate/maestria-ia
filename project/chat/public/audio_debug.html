@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Debug Tool</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        
+        .status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #1976d2;
+        }
+        
+        .status.success {
+            background: #e8f5e9;
+            color: #388e3c;
+            border-left: 4px solid #388e3c;
+        }
+        
+        .status.error {
+            background: #ffebee;
+            color: #d32f2f;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        .status.warning {
+            background: #fff3e0;
+            color: #f57c00;
+            border-left: 4px solid #f57c00;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        button.stop {
+            background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-card {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .info-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .info-card p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        audio {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .hex-display {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Audio Debug Tool</h1>
+        <p class="subtitle">Test your microphone and verify audio capture</p>
+        
+        <div id="status" class="status info">
+            Click "Start Recording" to test your microphone
+        </div>
+        
+        <div>
+            <button id="startBtn" onclick="startRecording()">🎙️ Start Recording</button>
+            <button id="stopBtn" onclick="stopRecording()" disabled class="stop">⏹️ Stop Recording</button>
+        </div>
+        
+        <div class="info-grid" id="infoGrid" style="display: none;">
+            <div class="info-card">
+                <h3>Duration</h3>
+                <p id="duration">0s</p>
+            </div>
+            <div class="info-card">
+                <h3>Size</h3>
+                <p id="size">0 KB</p>
+            </div>
+            <div class="info-card">
+                <h3>Format</h3>
+                <p id="format">-</p>
+            </div>
+            <div class="info-card">
+                <h3>Valid</h3>
+                <p id="valid">-</p>
+            </div>
+        </div>
+        
+        <div id="audioContainer"></div>
+        
+        <div id="details" style="display: none;">
+            <h3>📊 Technical Details</h3>
+            <p><strong>MIME Type:</strong> <span id="mimeType"></span></p>
+            <p><strong>Magic Bytes:</strong></p>
+            <div class="hex-display" id="magicBytes"></div>
+            <p><strong>Null Byte Analysis:</strong> <span id="nullAnalysis"></span></p>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let startTime;
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Try different MIME types for better compatibility
+                const mimeTypes = [
+                    'audio/webm;codecs=opus',
+                    'audio/webm',
+                    'audio/ogg;codecs=opus',
+                    'audio/mp4'
+                ];
+                
+                let selectedMime = mimeTypes.find(type => MediaRecorder.isTypeSupported(type));
+                
+                if (!selectedMime) {
+                    selectedMime = ''; // Let browser choose
+                }
+                
+                mediaRecorder = new MediaRecorder(stream, { 
+                    mimeType: selectedMime,
+                    audioBitsPerSecond: 128000
+                });
+                
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                        console.log(`Chunk received: ${event.data.size} bytes`);
+                    }
+                };
+                
+                mediaRecorder.onstop = analyzeRecording;
+                
+                mediaRecorder.start(1000); // 1 second chunks
+                startTime = Date.now();
+                
+                document.getElementById('status').className = 'status success';
+                document.getElementById('status').textContent = '🔴 Recording in progress...';
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                
+            } catch (error) {
+                document.getElementById('status').className = 'status error';
+                document.getElementById('status').textContent = `❌ Error: ${error.message}`;
+                console.error('Error accessing microphone:', error);
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+            }
+        }
+
+        async function analyzeRecording() {
+            const duration = (Date.now() - startTime) / 1000;
+            const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const size = audioBlob.size;
+            
+            // Read first 16 bytes
+            const arrayBuffer = await audioBlob.slice(0, 16).arrayBuffer();
+            const bytes = new Uint8Array(arrayBuffer);
+            const hexString = Array.from(bytes).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+            
+            // Count null bytes in first 1KB
+            const sampleSize = Math.min(1024, audioBlob.size);
+            const sampleBuffer = await audioBlob.slice(0, sampleSize).arrayBuffer();
+            const sampleBytes = new Uint8Array(sampleBuffer);
+            const nullCount = Array.from(sampleBytes).filter(b => b === 0).length;
+            const nullPercentage = (nullCount / sampleSize * 100).toFixed(1);
+            
+            // Determine if valid
+            const isValid = nullPercentage < 90;
+            
+            // Update UI
+            document.getElementById('duration').textContent = `${duration.toFixed(1)}s`;
+            document.getElementById('size').textContent = `${(size / 1024).toFixed(1)} KB`;
+            document.getElementById('format').textContent = mediaRecorder.mimeType.split(';')[0].split('/')[1].toUpperCase();
+            document.getElementById('valid').textContent = isValid ? '✅' : '❌';
+            document.getElementById('valid').style.color = isValid ? '#388e3c' : '#d32f2f';
+            
+            document.getElementById('mimeType').textContent = mediaRecorder.mimeType;
+            document.getElementById('magicBytes').textContent = hexString;
+            document.getElementById('nullAnalysis').textContent = `${nullPercentage}% null bytes (${nullCount}/${sampleSize})`;
+            document.getElementById('nullAnalysis').style.color = isValid ? '#388e3c' : '#d32f2f';
+            
+            document.getElementById('infoGrid').style.display = 'grid';
+            document.getElementById('details').style.display = 'block';
+            
+            if (isValid) {
+                document.getElementById('status').className = 'status success';
+                document.getElementById('status').textContent = '✅ Recording successful! Audio data looks valid.';
+                
+                // Create audio player
+                document.getElementById('audioContainer').innerHTML = `
+                    <h3>🎵 Playback</h3>
+                    <audio controls src="${audioUrl}"></audio>
+                `;
+            } else {
+                document.getElementById('status').className = 'status error';
+                document.getElementById('status').innerHTML = `
+                    <strong>❌ Corrupted Audio Detected</strong><br>
+                    ${nullPercentage}% of the recording is null bytes. This indicates a problem with microphone access or browser compatibility.
+                `;
+            }
+            
+            console.log('Recording analysis:', {
+                duration,
+                size,
+                mimeType: mediaRecorder.mimeType,
+                magicBytes: hexString,
+                nullPercentage,
+                isValid
+            });
+        }
+    </script>
+</body>
+</html>
