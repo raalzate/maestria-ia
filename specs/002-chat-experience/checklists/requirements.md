@@ -12,7 +12,8 @@
 
 - [x] CHK-004 — Los 4 síntomas reportados mapean a requisitos: verbosidad →
   FR-001/002/003; sugerencias → FR-004/005/006; voz con símbolos →
-  FR-007/008/009; karaoke → FR-010/011/012/013.
+  FR-007/008/009; karaoke → FR-010/011/012/013; escenario no visible →
+  FR-014/015/016.
 - [x] CHK-005 — Todos los FR son verificables por prueba o inspección.
 - [x] CHK-006 — Sin marcadores [NEEDS CLARIFICATION] pendientes.
 - [x] CHK-007 — Edge cases cubren: abreviaturas/decimales, mensajes 100%

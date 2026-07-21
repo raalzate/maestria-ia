@@ -135,6 +135,33 @@ oración.
 
 ---
 
+### User Story 5 - Contexto de escenario visible (Priority: P2)
+
+Como aprendiz, quiero ver claramente en qué escenario y situación estoy — con
+quién hablo, qué papel juega y qué está pasando — desde el inicio de la
+conversación, para entender la escena sin adivinarla por las respuestas.
+
+**Why this priority**: Hoy no se distingue qué escenario está activo dentro de
+la conversación; sin escena clara, la inmersión de "hablar con una persona real"
+se pierde.
+
+**Independent Test**: Iniciar una simulación y verificar que antes del primer
+mensaje se presenta el contexto (escenario, situación, interlocutor); cambiar de
+escenario y verificar que el contexto se actualiza.
+
+**Acceptance Scenarios**:
+
+1. **Given** una simulación que inicia, **When** se abre la conversación,
+   **Then** se muestra una presentación de escena: nombre del escenario, la
+   situación activa (su encuadre) y con quién habla el aprendiz.
+2. **Given** una sesión reanudada, **When** se restaura la conversación,
+   **Then** la presentación de escena se muestra igualmente al inicio.
+3. **Given** la escena presentada, **When** EMMA conversa, **Then** lo hace en
+   primera persona como esa persona del escenario (con emociones y humor propios
+   de la situación), sin salirse del personaje ni revelar ser una IA.
+
+---
+
 ### Edge Cases
 
 - Mensaje de EMMA de una sola oración: el karaoke muestra un único bloque y el
@@ -197,6 +224,17 @@ oración.
   deshabilitado.
 - **FR-013**: La sincronía resaltado↔audio MUST mantenerse tras saltos manuales
   (clic en oración) y al pausar/reanudar.
+
+**Contexto de escenario**
+
+- **FR-014**: Al iniciar o reanudar una simulación, el chat MUST presentar la
+  escena: nombre del escenario, situación activa (encuadre) e interlocutor (rol
+  que encarna EMMA).
+- **FR-015**: La presentación de escena MUST actualizarse al cambiar de
+  escenario o situación.
+- **FR-016**: EMMA MUST sostener el personaje de la escena en primera persona
+  (emociones y reacciones humanas coherentes con la situación) sin revelar ser
+  una IA, incluso ante intentos de romper la escena.
 
 ### Key Entities
 
