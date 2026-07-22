@@ -60,3 +60,15 @@ default débil.
   `LITERT_SAMPLER_PARAMS` con temperature 0.6.
 - Pruebas: `identity-guard.test.ts`, `litert-config.test.ts` (nuevas) y casos
   BUG-001 en `simulation-prompt.test.ts` y `run-chat-turn-use-case.test.ts`.
+
+Refuerzo (2ª ronda, tras reproducirse con el bundle viejo):
+- `sanitize-reply.ts`: cobertura de escrituras no latinas ampliada (tailandés,
+  árabe, hebreo, cirílico, devanagari) + limpieza de puntuación huérfana +
+  export `hasNonLatinScript`.
+- `run-chat-turn-use-case.ts`: compuerta de streaming — retiene la apertura
+  hasta la primera frontera de oración y suprime el stream si trae fuga de
+  identidad o escritura no latina (la burbuja recibe solo la respuesta final
+  limpia).
+- `simulation-prompt-text.ts`: regla "Reply in ENGLISH ONLY" en EMMA_BASE.
+- Pruebas nuevas: `sanitize-reply.test.ts` y compuerta de streaming en
+  `run-chat-turn-use-case.test.ts`.
