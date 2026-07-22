@@ -150,3 +150,21 @@ causado por el propio prompt):
   una respuesta idéntica al turno anterior de la persona cuenta como inválida.
 - FALLBACK técnico queda solo para: timeout sin tokens o motor que devuelve
   cadena vacía.
+
+9ª ronda (pipeline agéntico por turno — checklist con estado + capas de contexto):
+- Nuevo `scene-state.ts` (dominio): el razonamiento del agente es código
+  determinista, no el modelo. Checklist por escenario (standup: yesterday /
+  today / blockers; interview; vacation). Observe: cada mensaje sustantivo del
+  aprendiz cubre el ítem pendiente y CAPTURA el hecho literal; el relleno
+  ("yeah") no avanza. Decide: la directiva del turno dice qué ya se sabe
+  (prohibido re-preguntar, con los hechos) y qué preguntar AHORA. Verify:
+  `isReaskingCovered` veta respuestas que re-preguntan un ítem cubierto →
+  dispara el reintento del loop. Reemplaza a scene-script.ts (avanzaba por
+  conteo de turnos: "yeah" lo avanzaba y lo respondido temprano no se marcaba).
+- Nuevo `history-layers.ts` (dominio): capas de contexto — últimos 4 turnos
+  verbatim; turnos viejos solo si sustantivos; smalltalk viejo colapsado a
+  "(Earlier: greetings and small talk were exchanged.)" (los hechos ya viajan
+  en el checklist).
+- `runChatTurn` acepta `validateReply` (Verify inyectable) y aplica las capas
+  al plegar el historial. `use-chat-session` mantiene el `SceneState` (replay
+  al restaurar) y cablea Observe→Decide→Verify.
