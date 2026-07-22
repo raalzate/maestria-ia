@@ -139,3 +139,14 @@ causado por el propio prompt):
   trouble responding" queda SOLO para timeout sin tokens o respuesta vacía del
   motor (Sofía nunca vuelve a hablar como sistema).
 - Instrucción por turno: "never repeat … an opener you already used".
+
+8ª ronda (la recuperación se repetía y se volvió el nuevo bucle):
+- Loop de validación en `runChatTurn`: generar → limpiar → si quedó vacío o
+  idéntico al último turno de la persona, UN reintento con nudge correctivo
+  ("Your previous reply was rejected… reply again with different wording") →
+  si también falla, recuperación en personaje VARIADA (`pickRecovery`: nunca
+  la misma línea dos turnos seguidos).
+- `cleanReply` ya no inyecta la recuperación (devuelve "" y el caller decide);
+  una respuesta idéntica al turno anterior de la persona cuenta como inválida.
+- FALLBACK técnico queda solo para: timeout sin tokens o motor que devuelve
+  cadena vacía.
