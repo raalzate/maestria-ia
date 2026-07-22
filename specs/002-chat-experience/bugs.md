@@ -128,3 +128,14 @@ causado por el propio prompt):
 - `chat-brevity`: patrón para paréntesis de planificación ("Here is the next
   step in the conversation…").
 - `renderCharacterStyle` compacto (regla de inglés deduplicada a EMMA_BASE).
+
+7ª ronda (opener repetido + fallback técnico rompiendo la inmersión):
+- Nuevo `repetition-guard.ts` (dominio): si la respuesta abre con las mismas
+  4 palabras normalizadas que un turno anterior de la persona ("Great, so far
+  so good!…"), el opener se extirpa de forma determinista.
+- `run-chat-turn-use-case.ts`: cuando el modelo generó algo pero la limpieza
+  lo vació por completo, se responde con la línea de recuperación EN PERSONAJE
+  ("Sorry, I lost my train of thought…") — el fallback técnico "EMMA is having
+  trouble responding" queda SOLO para timeout sin tokens o respuesta vacía del
+  motor (Sofía nunca vuelve a hablar como sistema).
+- Instrucción por turno: "never repeat … an opener you already used".
