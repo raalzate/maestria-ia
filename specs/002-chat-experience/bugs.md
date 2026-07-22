@@ -72,3 +72,16 @@ Refuerzo (2ª ronda, tras reproducirse con el bundle viejo):
 - `simulation-prompt-text.ts`: regla "Reply in ENGLISH ONLY" en EMMA_BASE.
 - Pruebas nuevas: `sanitize-reply.test.ts` y compuerta de streaming en
   `run-chat-turn-use-case.test.ts`.
+
+Solución de fondo (3ª ronda, tras resaludo/amnesia en turno 2):
+- Se eliminó la memoria incremental del motor local (KV-cache de LiteRT perdía
+  los turnos previos: la persona resaludaba e ignoraba lo dicho). Ahora cada
+  turno reconstruye el contexto COMPLETO desde el historial de la app:
+  `buildPrompt` emite transcripción etiquetada (You:/Learner:) + NEW MESSAGE +
+  instrucción de continuidad con el ancla de personaje al final.
+- `llm-adapter.ts`: adiós `runLocalSessionTurn`/mapa de conversaciones; todo
+  turno local es system + prompt completo en conversación fresca.
+- Nuevo `greeting-guard.ts` (dominio): elimina de forma determinista el
+  resaludo cuando la escena ya empezó; si la respuesta era puro saludo se
+  responde con la línea de recuperación en personaje.
+- `EMMA_BASE`: regla explícita "saluda solo una vez".
