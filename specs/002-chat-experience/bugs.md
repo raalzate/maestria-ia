@@ -184,3 +184,16 @@ causado por el propio prompt):
   el "cambio de texto" reportado: antes el estático se reemplazaba en vivo.
 - `scene-intro.tsx` ya no llama al LLM: recibe narrativa/sceneReady por props;
   `sceneBriefing` del runtime se reemplaza por `sceneContract`.
+
+11ª ronda (el agente decide terminar → feedback de Emma automático):
+- `isSceneComplete` (scene-state): checklist sin pendientes ⇒ la escena debe
+  cerrar. En `use-chat-session`, cuando el checklist se completa la respuesta
+  siguiente es el CIERRE de la persona; tras entregarlo (o al agotar el
+  presupuesto `maxTurnsFor`) se marca `sceneComplete`, se bloquean nuevos
+  turnos y `EndSession` dispara `finish()` automáticamente (autoFinish, con
+  pausa de 2.5s para leer la despedida).
+- El flujo de cierre ya existente entrega TODO lo pedido: reporte/lección de
+  Emma (errores del búfer silencioso revelados), `evaluateProgression`
+  (promoción de nivel o aspectos a mejorar), `markPassed` y recomendación del
+  siguiente escenario. Antes era solo manual (botón Terminar, que se conserva
+  para salir antes).
