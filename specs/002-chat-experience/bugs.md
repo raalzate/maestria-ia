@@ -168,3 +168,19 @@ causado por el propio prompt):
 - `runChatTurn` acepta `validateReply` (Verify inyectable) y aplica las capas
   al plegar el historial. `use-chat-session` mantiene el `SceneState` (replay
   al restaurar) y cablea Observe→Decide→Verify.
+
+10ª ronda (contrato de escena como prerequisito e inyección):
+- DEFECTO: la narrativa inmersiva de la antesala solo se MOSTRABA al aprendiz;
+  nunca entraba al system prompt — la persona jugaba una escena que no conocía
+  (dos mundos desconectados) y el prompt le decía "inventa tus detalles".
+- Nuevo `create-scene-contract-use-case.ts`: única fuente de verdad. Genera
+  (1) hechos EN fijos (3 líneas, validadas en el borde) y (2) la narrativa ES
+  derivada DE ESOS hechos. Los hechos se inyectan al system como
+  "SCENE FACTS (fixed — never contradict them)" (guardrail), reemplazando al
+  bloque genérico. Fallback determinista: el framing del catálogo.
+- Prerequisito de inicio: `use-chat-session` genera el contrato al montar la
+  antesala (timeout 25s → fallback) y `begin()` lo exige; el botón muestra
+  "Creando tu escena…" (spinner) hasta que está listo — esto también explica
+  el "cambio de texto" reportado: antes el estático se reemplazaba en vivo.
+- `scene-intro.tsx` ya no llama al LLM: recibe narrativa/sceneReady por props;
+  `sceneBriefing` del runtime se reemplaza por `sceneContract`.
