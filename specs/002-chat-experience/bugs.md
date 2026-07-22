@@ -85,3 +85,15 @@ Solución de fondo (3ª ronda, tras resaludo/amnesia en turno 2):
   resaludo cuando la escena ya empezó; si la respuesta era puro saludo se
   responde con la línea de recuperación en personaje.
 - `EMMA_BASE`: regla explícita "saluda solo una vez".
+
+4ª ronda (circularidad a los ~5 turnos + sugerencias que repiten al agente):
+- Nuevo `scene-script.ts` (dominio): guion por fases con beats por turno del
+  aprendiz (daily_standup: hoy → bloqueos → tema faltante/resumen → cierre;
+  también tech_interview y vacation_request). El beat se inyecta como
+  "SCENE SCRIPT — …" en la instrucción final del prompt de cada turno; obliga a
+  avanzar en vez de repetir "tell me more about the next steps".
+- Sugerencias: apéndice `SUGGEST_REPLIES_ANSWER_RULES` (los chips son el lado
+  del APRENDIZ, primera persona, nunca las preguntas del agente) + filtro
+  determinista `isEchoOfAgent` (solape de palabras de contenido; umbral 0.5
+  para preguntas, 0.8 para afirmaciones).
+- `sanitize-reply.ts`: elimina paréntesis vacíos/solo-puntuación ("( .)").
