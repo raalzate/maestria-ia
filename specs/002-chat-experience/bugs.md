@@ -112,3 +112,19 @@ Solución de fondo (3ª ronda, tras resaludo/amnesia en turno 2):
 - `chat-brevity.ts`: tope duro de 60 palabras (los run-ons sin puntuación
   burlaban el tope de oraciones); elimina andamiaje de etiquetas ("What I
   need to know:", "Goal:", "(now)") y muñones de lista numerada ("1. What 2.").
+
+6ª ronda (rediseño de ingeniería de contexto — el eco de instrucciones era
+causado por el propio prompt):
+- El system prompt acumulaba 878 palabras de directivas; el modelo pequeño las
+  RECITABA en escena ("(Here is the next step in the conversation…)"). Se
+  rediseñó bajo presupuesto: 349 palabras reales (test de regresión ≤330 con
+  fixture), directivas deduplicadas, y reglas+ejemplo AL FINAL (sesgo de
+  recencia).
+- Few-shot: nuevo bloque STYLE_EXAMPLE (un intercambio ejemplo del formato
+  esperado) — mostrar > prohibir para modelos 2–4B.
+- Contrato de salida: la instrucción por turno pide "ONE short line of spoken
+  dialogue — nothing else"; `sanitize-reply` quita la etiqueta de hablante
+  ("You:", "Sofía Torres:") si el modelo copia el formato del transcript.
+- `chat-brevity`: patrón para paréntesis de planificación ("Here is the next
+  step in the conversation…").
+- `renderCharacterStyle` compacto (regla de inglés deduplicada a EMMA_BASE).
