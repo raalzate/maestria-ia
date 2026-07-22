@@ -97,3 +97,18 @@ Solución de fondo (3ª ronda, tras resaludo/amnesia en turno 2):
   determinista `isEchoOfAgent` (solape de palabras de contenido; umbral 0.5
   para preguntas, 0.8 para afirmaciones).
 - `sanitize-reply.ts`: elimina paréntesis vacíos/solo-puntuación ("( .)").
+
+5ª ronda (vietnamita, run-ons, colapso progresivo del motor):
+- `litert-engine.ts`: FUGA DE MEMORIA GPU — cada turno creaba una conversación
+  LiteRT nueva y nunca la liberaba; el KV-cache acumulado degradaba el motor
+  hasta el colapso a los pocos turnos. Ahora `litertGenerate` cierra la
+  conversación en `finally` (`conversation.delete()`), causa probable del
+  deterioro progresivo.
+- `sanitize-reply.ts`: el vietnamita es escritura LATINA con diacríticos y
+  evadía el filtro de runas. Nuevo `dropForeignSentences`: elimina ORACIONES
+  completas con marcadores extranjeros (Latin Ext. Additional + đơưă, y las
+  runas ya cubiertas), conservando las oraciones EN/ES vecinas; + limpieza de
+  comillas huérfanas iniciales.
+- `chat-brevity.ts`: tope duro de 60 palabras (los run-ons sin puntuación
+  burlaban el tope de oraciones); elimina andamiaje de etiquetas ("What I
+  need to know:", "Goal:", "(now)") y muñones de lista numerada ("1. What 2.").
