@@ -1,0 +1,481 @@
+/* ============================================================
+   Editorial style — Guía PLN
+   Optimizado para Chromium headless + KaTeX
+   ============================================================ */
+
+@page {
+  size: A4;
+  margin: 22mm 20mm;
+}
+
+/* Base typography */
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: "Source Serif Pro", "Charter", "Georgia", "Times New Roman", serif;
+  font-size: 10.5pt;
+  line-height: 1.55;
+  color: #1a1a1a;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+/* ---------- Cover page (title block) ---------- */
+header#title-block-header {
+  page-break-after: always;
+  text-align: center;
+  padding-top: 60mm;
+}
+
+header#title-block-header h1.title {
+  font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-size: 26pt;
+  font-weight: 700;
+  color: #0a2540;
+  line-height: 1.2;
+  border: none;
+  margin: 0 0 14mm 0;
+  padding: 0;
+  page-break-before: avoid;
+}
+
+header#title-block-header p.subtitle {
+  font-family: "Source Serif Pro", "Georgia", serif;
+  font-size: 13pt;
+  font-style: italic;
+  color: #555;
+  margin: 0 0 22mm 0;
+  line-height: 1.4;
+}
+
+header#title-block-header p.author {
+  font-family: "Source Sans Pro", "Helvetica Neue", sans-serif;
+  font-size: 12pt;
+  color: #2c3e50;
+  margin: 8mm 0 3mm 0;
+}
+
+header#title-block-header p.date {
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 10.5pt;
+  color: #888;
+  margin: 0;
+}
+
+/* ---------- Table of contents ---------- */
+nav#TOC {
+  page-break-after: always;
+  page-break-before: always;
+}
+
+nav#TOC h1, nav#TOC > h2 {
+  page-break-before: avoid;
+  font-family: "Source Sans Pro", "Helvetica Neue", sans-serif;
+  font-size: 20pt;
+  color: #0a2540;
+  border-bottom: 3px solid #F06105;
+  padding-bottom: 4pt;
+  margin-bottom: 14pt;
+}
+
+nav#TOC > h2:first-child::before,
+nav#TOC > h1:first-child::before {
+  content: "Tabla de contenidos";
+}
+
+nav#TOC ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+nav#TOC > ul > li {
+  font-family: "Source Sans Pro", "Helvetica Neue", sans-serif;
+  font-size: 11pt;
+  font-weight: 600;
+  color: #0a2540;
+  margin-top: 6pt;
+}
+
+nav#TOC ul ul {
+  padding-left: 14pt;
+  margin: 2pt 0;
+}
+
+nav#TOC ul ul > li {
+  font-weight: 400;
+  font-size: 10pt;
+  color: #444;
+}
+
+nav#TOC ul ul ul > li {
+  font-size: 9.5pt;
+  color: #666;
+}
+
+nav#TOC a {
+  text-decoration: none;
+  color: inherit;
+  border: none;
+}
+
+/* ---------- Headings ---------- */
+h1 {
+  font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-size: 22pt;
+  font-weight: 700;
+  color: #0a2540;
+  border-bottom: 3px solid #F06105;
+  padding-bottom: 6pt;
+  margin: 30pt 0 16pt 0;
+  page-break-before: always;
+  page-break-after: avoid;
+}
+
+h2 {
+  font-family: "Source Sans Pro", "Helvetica Neue", sans-serif;
+  font-size: 16pt;
+  font-weight: 600;
+  color: #0a2540;
+  margin: 22pt 0 10pt 0;
+  border-left: 5px solid #F06105;
+  padding-left: 12pt;
+  page-break-after: avoid;
+}
+
+h3 {
+  font-family: "Source Sans Pro", "Helvetica Neue", sans-serif;
+  font-size: 13pt;
+  font-weight: 600;
+  color: #234060;
+  margin: 18pt 0 8pt 0;
+  page-break-after: avoid;
+}
+
+h4 {
+  font-family: "Source Sans Pro", "Helvetica Neue", sans-serif;
+  font-size: 11.5pt;
+  font-weight: 600;
+  color: #34495e;
+  font-style: italic;
+  margin: 14pt 0 6pt 0;
+  page-break-after: avoid;
+}
+
+/* Section numbering reset for unnumbered parts */
+.unnumbered {
+  border-bottom: none;
+}
+
+/* ---------- Paragraphs & inline ---------- */
+p {
+  margin: 6pt 0;
+  orphans: 3;
+  widows: 3;
+}
+
+strong {
+  color: #0a2540;
+  font-weight: 700;
+}
+
+em {
+  color: #2c3e50;
+}
+
+a {
+  color: #0a4d80;
+  text-decoration: none;
+  border-bottom: 1px dotted #aaa;
+}
+
+/* ---------- Code ---------- */
+code {
+  font-family: "JetBrains Mono", "Fira Code", "Menlo", "Consolas", monospace;
+  font-size: 9pt;
+  background: #f4f6f8;
+  padding: 1.5px 5px;
+  border-radius: 3px;
+  color: #b8336a;
+  border: 1px solid #e6e9ee;
+}
+
+pre {
+  background: #f8f9fb;
+  border: 1px solid #e1e4e8;
+  border-left: 4px solid #F06105;
+  padding: 12pt 14pt;
+  margin: 12pt 0;
+  font-family: "JetBrains Mono", "Fira Code", "Menlo", "Consolas", monospace;
+  font-size: 9pt;
+  line-height: 1.45;
+  overflow-x: auto;
+  page-break-inside: avoid;
+  border-radius: 4px;
+  color: #1a1a1a;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* ASCII diagrams (pre without language) get a special look */
+pre:not([class]),
+pre.unknown,
+div.sourceCode {
+  background: #fbfcfd;
+}
+
+/* ---------- Blockquotes (notes) ---------- */
+blockquote {
+  border-left: 4px solid #6c8aa6;
+  background: #f4f8fc;
+  margin: 12pt 0;
+  padding: 10pt 14pt;
+  color: #2c3e50;
+  font-style: italic;
+  border-radius: 0 4px 4px 0;
+  page-break-inside: avoid;
+}
+
+blockquote p {
+  margin: 4pt 0;
+}
+
+/* ---------- Tables ---------- */
+table {
+  border-collapse: collapse;
+  margin: 14pt 0;
+  font-size: 9.5pt;
+  width: 100%;
+  page-break-inside: avoid;
+  font-family: "Source Sans Pro", "Helvetica Neue", sans-serif;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+thead {
+  background: #0a2540;
+}
+
+th {
+  background: #0a2540;
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 7pt 10pt;
+  border: none;
+  font-size: 9.5pt;
+  letter-spacing: 0.2px;
+}
+
+td {
+  padding: 6pt 10pt;
+  border: 1px solid #e1e4e8;
+  border-left: none;
+  border-right: none;
+  vertical-align: top;
+  font-size: 9.5pt;
+  color: #1a1a1a;
+}
+
+tr:nth-child(even) td {
+  background: #f7f9fb;
+}
+
+tr:hover td {
+  background: #eef3f8;
+}
+
+td code {
+  font-size: 8.5pt;
+}
+
+/* Numeric right-align via pandoc colon-aligned columns */
+td[align="right"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+td[align="center"] { text-align: center; }
+td[align="left"]   { text-align: left; }
+th[align="right"]  { text-align: right; }
+th[align="center"] { text-align: center; }
+
+/* ---------- Lists ---------- */
+ul, ol {
+  margin: 8pt 0 8pt 16pt;
+  padding-left: 8pt;
+}
+
+li {
+  margin: 3pt 0;
+}
+
+ul li::marker {
+  color: #F06105;
+}
+
+ol li::marker {
+  color: #F06105;
+  font-weight: 600;
+}
+
+/* ---------- Page break helper ---------- */
+.page-break {
+  page-break-after: always;
+  height: 0;
+  display: block;
+}
+
+/* ---------- KaTeX (math) refinements ---------- */
+.katex {
+  font-size: 1.05em !important;
+}
+
+.katex-display {
+  margin: 14pt 0 !important;
+  padding: 6pt 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.katex-display > .katex {
+  font-size: 1.1em !important;
+}
+
+/* ---------- Figures (inline SVG diagrams) ---------- */
+.figure {
+  margin: 18pt 0;
+  padding: 14pt 12pt 6pt 12pt;
+  background: #fbfcfd;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  page-break-inside: avoid;
+  text-align: center;
+}
+
+.figure svg {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.figure .caption,
+.figure p.caption {
+  font-family: "Source Sans Pro", "Helvetica Neue", sans-serif;
+  font-size: 9pt;
+  color: #5c6f80;
+  font-style: italic;
+  text-align: center;
+  margin: 10pt 4pt 0 4pt;
+  line-height: 1.4;
+}
+
+/* ---------- Horizontal rules ---------- */
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 20pt 0;
+}
+
+/* ---------- Print refinements ---------- */
+@media print {
+  pre, blockquote, table { page-break-inside: avoid; }
+  h1, h2, h3, h4 { page-break-after: avoid; }
+  img { max-width: 100%; }
+}
+
+/* ============================================================
+   Componentes gráficos (UX) — pipeline, callouts, cards, pills
+   ============================================================ */
+
+/* ---------- Pipeline de etapas ---------- */
+.pipeline { margin: 14pt 0; }
+.stage {
+  display: flex; align-items: stretch; gap: 10pt;
+  background: #ffffff;
+  border: 1px solid #e1e4e8;
+  border-left: 5px solid #0a2540;
+  border-radius: 8px;
+  padding: 9pt 12pt;
+  margin: 0 0 6pt 0;
+  page-break-inside: avoid;
+  box-shadow: 0 1px 2px rgba(10,37,64,0.06);
+}
+.stage .stnum {
+  flex: 0 0 26px; height: 26px; width: 26px;
+  background: #0a2540; color: #fff;
+  border-radius: 50%;
+  font-family: "Source Sans Pro","Helvetica",sans-serif;
+  font-weight: 700; font-size: 12pt;
+  display: flex; align-items: center; justify-content: center;
+  align-self: center;
+}
+.stage .sttitle {
+  font-family: "Source Sans Pro","Helvetica",sans-serif;
+  font-weight: 700; font-size: 11.5pt; color: #0a2540; margin-bottom: 1pt;
+}
+.stage .stq { font-style: italic; color: #5a6b7b; font-size: 9.5pt; margin-bottom: 4pt; }
+.stage .stex { font-size: 9pt; color: #1a1a1a; margin-top: 4pt; }
+.stage .pills span {
+  display: inline-block;
+  background: #eef2f7; color: #234; border: 1px solid #d6dee7;
+  border-radius: 10px; padding: 1pt 7pt; margin: 1pt 3pt 1pt 0;
+  font-family: "Source Sans Pro","Helvetica",sans-serif; font-size: 8pt;
+}
+/* color por etapa */
+.stage.s1 { border-left-color: #F06105; } .stage.s1 .stnum { background: #F06105; }
+.stage.s2 { border-left-color: #d98324; } .stage.s2 .stnum { background: #d98324; }
+.stage.s3 { border-left-color: #2e8b57; } .stage.s3 .stnum { background: #2e8b57; }
+.stage.s4 { border-left-color: #2f6db0; } .stage.s4 .stnum { background: #2f6db0; }
+.stage.s5 { border-left-color: #6a4ca5; } .stage.s5 .stnum { background: #6a4ca5; }
+
+/* ---------- Callouts ---------- */
+.callout {
+  border-radius: 0 6px 6px 0;
+  padding: 8pt 12pt 8pt 14pt;
+  margin: 9pt 0;
+  font-size: 10pt;
+  page-break-inside: avoid;
+}
+.callout > :first-child { margin-top: 0; }
+.callout > :last-child { margin-bottom: 0; }
+.callout::before {
+  font-family: "Source Sans Pro","Helvetica",sans-serif;
+  font-weight: 700; font-size: 9pt; letter-spacing: 0.3px;
+  display: block; margin-bottom: 3pt; text-transform: uppercase;
+}
+.callout.plain   { background: #f4f8fc; border-left: 4px solid #6c8aa6; }
+.callout.plain::before   { content: "🟦  En palabras"; color: #2f6db0; }
+.callout.example { background: #f3faf5; border-left: 4px solid #2e8b57; }
+.callout.example::before { content: "✏️  Ejemplo"; color: #2e8b57; }
+.callout.key     { background: #fff7ef; border-left: 4px solid #F06105; }
+.callout.key::before     { content: "💡  Idea clave"; color: #d35400; }
+.callout.warn    { background: #fdf3f3; border-left: 4px solid #c0392b; }
+.callout.warn::before    { content: "⚠️  Ojo"; color: #c0392b; }
+
+/* ---------- Grid de tarjetas ---------- */
+.cardgrid { display: flex; flex-wrap: wrap; gap: 8pt; margin: 10pt 0; }
+.card {
+  flex: 1 1 44%;
+  background: #fff; border: 1px solid #e1e4e8; border-top: 3px solid #0a2540;
+  border-radius: 6px; padding: 8pt 10pt; page-break-inside: avoid;
+}
+.card .ct { font-family: "Source Sans Pro","Helvetica",sans-serif; font-weight: 700;
+  color: #0a2540; font-size: 10pt; margin-bottom: 2pt; }
+.card .cd { font-size: 9pt; color: #333; }
+
+/* ---------- Diagrama de vectores (SVG) ---------- */
+.figbox {
+  text-align: center; margin: 12pt 0; padding: 8pt;
+  background: #fbfcfd; border: 1px solid #e8ebee; border-radius: 8px;
+  page-break-inside: avoid;
+}
+.figbox figcaption { font-size: 8.5pt; color: #5a6b7b; margin-top: 4pt; font-style: italic; }

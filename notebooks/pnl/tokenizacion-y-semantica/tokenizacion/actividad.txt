@@ -1,0 +1,21 @@
+Los recursos para el trabajo en casa continen:  material de lectura, notebooks  y videos explicativos de  cada una de las tokenizaciones y principalmente de la tokenización de subpalabras.  Esta actividad se compone de dos momentos, en el primero vamos a revisar los ejemplos y el blog  diseñado especialmente para este curso:  PLN con Depp LearningLinks to an external site. . En el blog se debe revisar la  información sobre: la introducción a la Tokenización, el uso de Tokenizadores, las características lingüísticas en la tokenización, la tokenización de caracteres, de palabras, subpalabras y Byte-Pair Encoding, especialmente. Este material contiene además de los conceptos generales, su  aplicación a través de ejemplos como, la estructura lingüística de los Tweets.
+
+Para ampliar la comprensión del tema,  se recomienda revisar los siguientes vídeos: Introducción a la tokenización, BPE y Scratch Wordpiece.
+
+Unido a los ejemplos presentes  en los siguientes Notebooks:
+
+- act4_tokenizadores.ipynb
+- Sentencepiece+bpe.ipynb
+
+El segundo momento consiste en desarrollar:
+
+- Act_4_quiz1-tokenizadores-1.pdf
+
+Entregar el archivo en formato  .ipynb funcionando.
+
+ - act4-tokenizadores.ipynb
+
+Rublicas 
+
+- rublicas.pdf
+

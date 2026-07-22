@@ -1,0 +1,45 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Python template
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+chat-env/
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Project specific
+.files/
+debug_files/
+
+# Generated files
+public/generated/
+public/*.mp3
+public/suggestion_*.html
+public/translation_*.html
+
+# Chainlit
+.chainlit/
+
+# Environment variables
+.env
+
+# Pytest
+.pytest_cache/
+*.pyc
+
+# Data files (optional - uncomment if you don't want to track user data)
+# data/user_progress/

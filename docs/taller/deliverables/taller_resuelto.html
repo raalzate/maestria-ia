@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Taller Investigación de Usuarios — Resuelto</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 20mm 16mm;
+    @top-left { content: "Taller Investigación de Usuarios — IHC"; font-family: 'Inter', sans-serif; font-size: 9pt; color: #6b7280; }
+    @top-right { content: "Raúl A. Alzate · Maestría CODING — Univalle"; font-family: 'Inter', sans-serif; font-size: 9pt; color: #6b7280; }
+    @bottom-center { content: "Página " counter(page) " de " counter(pages); font-family: 'Inter', sans-serif; font-size: 9pt; color: #9ca3af; }
+  }
+  @page :first { @top-left { content: ""; } @top-right { content: ""; } @bottom-center { content: ""; } }
+
+  :root {
+    --primary: #C8102E;
+    --primary-dark: #7A0E1F;
+    --accent: #D4A24C;
+    --ink: #1a1a1a;
+    --muted: #4a4a4a;
+    --soft: #f5f5f5;
+    --border: #d1d1d1;
+    --good: #2d7a3e;
+    --bad: #8B0000;
+    --warn: #b8860b;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    color: var(--ink);
+    line-height: 1.45;
+    font-size: 10.5pt;
+  }
+
+  h1 { color: var(--primary); font-size: 24pt; margin: 0 0 4pt 0; letter-spacing: -0.02em; }
+  h2 { color: var(--primary); font-size: 16pt; border-bottom: 2px solid var(--accent); padding-bottom: 4pt; margin: 18pt 0 10pt; page-break-after: avoid; }
+  h3 { color: var(--ink); font-size: 12pt; margin: 12pt 0 6pt; page-break-after: avoid; }
+  h4 { color: var(--muted); font-size: 10.5pt; margin: 8pt 0 4pt; text-transform: uppercase; letter-spacing: 0.05em; }
+  p { margin: 4pt 0 8pt; text-align: justify; }
+  ul, ol { margin: 4pt 0 8pt; padding-left: 18pt; }
+  li { margin-bottom: 3pt; }
+  strong { color: var(--ink); }
+  code { background: var(--soft); padding: 1pt 4pt; border-radius: 3pt; font-family: 'JetBrains Mono', monospace; font-size: 9.5pt; }
+
+  .cover {
+    height: 257mm;
+    page-break-after: always;
+    background: white;
+    color: var(--ink);
+    padding: 40mm 20mm;
+    position: relative;
+    overflow: hidden;
+    border-top: 12mm solid var(--primary);
+  }
+  .cover::before {
+    content: ""; position: absolute; right: -60mm; top: 30mm;
+    width: 180mm; height: 180mm;
+    background: radial-gradient(circle, rgba(200,16,46,0.08), transparent 65%);
+  }
+  .cover::after {
+    content: ""; position: absolute; left: 0; bottom: 0;
+    width: 100%; height: 4mm;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 50%, var(--accent) 100%);
+  }
+  .cover .label { font-size: 11pt; letter-spacing: 0.3em; text-transform: uppercase; color: var(--primary); font-weight: 600; }
+  .cover h1 { color: var(--primary); font-size: 40pt; line-height: 1.0; margin: 14pt 0; max-width: 80%; font-weight: 700; }
+  .cover h1 .accent { color: var(--primary-dark); }
+  .cover .rule { width: 60mm; height: 3pt; background: var(--accent); margin: 10pt 0 16pt; }
+  .cover .sub { font-size: 13pt; color: var(--muted); max-width: 75%; line-height: 1.5; }
+  .cover .meta { position: absolute; bottom: 25mm; left: 20mm; right: 20mm; font-size: 10pt; color: var(--ink); border-top: 1px solid var(--border); padding-top: 10pt; }
+  .cover .badge { display: inline-block; background: var(--primary); color: white; padding: 5pt 12pt; border-radius: 3pt; font-size: 9pt; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; }
+  .cover .uni { position: absolute; top: 22mm; right: 20mm; text-align: right; font-size: 9pt; color: var(--muted); line-height: 1.4; }
+  .cover .uni strong { color: var(--primary); font-size: 11pt; display: block; letter-spacing: 0.05em; }
+
+  .toc { page-break-after: always; }
+  .toc ol { list-style: none; padding-left: 0; }
+  .toc li { padding: 6pt 0; border-bottom: 1px dotted var(--border); display: flex; justify-content: space-between; }
+  .toc .num { color: var(--accent); font-weight: 600; margin-right: 8pt; }
+
+  .context-box {
+    background: linear-gradient(135deg, #fdf6f0 0%, #fef9f0 100%);
+    border-left: 4px solid var(--accent);
+    padding: 10pt 14pt;
+    margin: 10pt 0 14pt;
+    border-radius: 4pt;
+  }
+  .context-box h4 { margin-top: 0; color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; margin: 8pt 0 12pt; font-size: 9.5pt; page-break-inside: avoid; }
+  th { background: var(--primary); color: white; padding: 6pt 8pt; text-align: left; font-weight: 600; }
+  td { padding: 6pt 8pt; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--soft); }
+
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin: 8pt 0; }
+  .pros, .cons { padding: 8pt 12pt; border-radius: 4pt; font-size: 9.5pt; }
+  .pros { background: #f0fdf4; border-left: 3px solid var(--good); }
+  .cons { background: #fef2f2; border-left: 3px solid var(--bad); }
+  .pros strong { color: var(--good); }
+  .cons strong { color: var(--bad); }
+  .pros ul, .cons ul { margin: 4pt 0; padding-left: 14pt; }
+
+  .timeline { display: flex; gap: 6pt; margin: 12pt 0; flex-wrap: wrap; }
+  .step {
+    flex: 1; min-width: 80mm;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 4pt;
+    padding: 8pt 10pt;
+    page-break-inside: avoid;
+    background: white;
+  }
+  .step .n { font-size: 16pt; color: var(--accent); font-weight: 700; }
+  .step .t { font-weight: 600; color: var(--primary); margin: 2pt 0 4pt; font-size: 10pt; }
+  .step .d { font-size: 9pt; color: var(--muted); }
+
+  .mindmap-container { page-break-inside: avoid; margin: 12pt 0; text-align: center; }
+  svg { max-width: 100%; height: auto; }
+
+  .vs-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: 4pt; overflow: hidden; margin: 10pt 0; page-break-inside: avoid; }
+  .vs-box .col { padding: 10pt 14pt; }
+  .vs-box .si { background: #f0fdf4; }
+  .vs-box .no { background: #fef2f2; border-left: 1px solid var(--border); }
+  .vs-box h4 { margin: 0 0 6pt; }
+  .vs-box .si h4 { color: var(--good); }
+  .vs-box .no h4 { color: var(--bad); }
+  .vs-box ul { margin: 0; padding-left: 16pt; font-size: 9.5pt; }
+
+  .concept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; margin: 10pt 0; }
+  .concept-card {
+    border: 1px solid var(--border);
+    border-radius: 4pt;
+    padding: 8pt 10pt;
+    background: white;
+    page-break-inside: avoid;
+  }
+  .concept-card .h { color: var(--primary); font-weight: 600; font-size: 10pt; margin-bottom: 3pt; }
+  .concept-card .b { font-size: 9pt; color: var(--muted); }
+
+  .persona-card {
+    border: 1px solid var(--border);
+    border-radius: 6pt;
+    padding: 10pt 14pt;
+    margin: 8pt 0;
+    background: white;
+    page-break-inside: avoid;
+    border-top: 4px solid var(--accent);
+  }
+  .persona-card .name { color: var(--primary); font-size: 11pt; font-weight: 600; }
+  .persona-card .role { color: var(--accent); font-size: 9pt; text-transform: uppercase; letter-spacing: 0.05em; }
+  .persona-card .quote { font-style: italic; color: var(--muted); border-left: 2px solid var(--accent); padding-left: 8pt; margin: 6pt 0; font-size: 9.5pt; }
+
+  .legend { font-size: 8.5pt; color: var(--muted); font-style: italic; text-align: center; margin-top: 4pt; }
+
+  .pagebreak { page-break-after: always; }
+</style>
+</head>
+<body>
+
+<!-- ======= PORTADA ======= -->
+<section class="cover">
+  <div class="uni">
+    <strong>Universidad del Valle</strong>
+    Facultad de Ingeniería<br/>
+    Escuela de Ingeniería de Sistemas y Computación
+  </div>
+  <div class="label" style="margin-top: 30mm;">Actividad 7 · Fundamentos IHC</div>
+  <h1>Taller<br/><span class="accent">Investigación</span><br/>de Usuarios</h1>
+  <div class="rule"></div>
+  <p class="sub">Resolución de cognotécnicas aplicadas al proyecto <strong>Agentic Loop UI</strong> — Interfaz determinista para asistentes conversacionales de banca digital colombiana.</p>
+  <div class="meta">
+    <span class="badge">Entrega Mayo 2026</span><br/><br/>
+    <strong>Raúl Andrés Alzate</strong><br/>
+    Maestría en Computación para el Desarrollo de Aplicaciones Inteligentes (CODING)<br/>
+    Fundamentos de Interacción Humano–Computador
+  </div>
+</section>
+
+<!-- ======= TOC ======= -->
+<section class="toc">
+  <h2>Tabla de Contenidos</h2>
+  <ol>
+    <li><span><span class="num">0.</span>Contexto del Proyecto</span><span>3</span></li>
+    <li><span><span class="num">1.</span>Pasos para realizar la Entrevista de Usuarios</span><span>4</span></li>
+    <li><span><span class="num">2.</span>Recomendaciones para entrevistas de usuarios</span><span>5</span></li>
+    <li><span><span class="num">3.</span>Aspectos a evitar al realizar entrevistas</span><span>6</span></li>
+    <li><span><span class="num">4.</span>Elementos clave del Diagrama de Afinidad</span><span>7</span></li>
+    <li><span><span class="num">5.</span>Herramientas para Diagramas de Afinidad</span><span>8</span></li>
+    <li><span><span class="num">6.</span>Aspectos clave para definir User-Personas</span><span>9</span></li>
+    <li><span><span class="num">7.</span>Herramientas para crear User-Personas</span><span>10</span></li>
+    <li><span><span class="num">8.</span>Conclusiones y aplicación al proyecto</span><span>11</span></li>
+  </ol>
+</section>
+
+<!-- ======= CONTEXTO ======= -->
+<section>
+  <h2>0. Contexto del Proyecto</h2>
+  <div class="context-box">
+    <h4>Proyecto base — Agentic Loop UI · Banca digital colombiana</h4>
+    <p>Diseño de una interfaz <strong>determinista</strong> para un asistente conversacional de banca digital colombiana, delimitado al flujo de <strong>cancelación de tarjeta de crédito</strong>. El objetivo es eliminar las <em>alucinaciones de completitud</em> de los LLMs, sustituyendo la prosa probabilística por <strong>señales técnicas verificables</strong> de la API (<code>stop_reason</code>, códigos HTTP, ToolResult). El stack declarado es Claude API + tool use + orquestador propio, evaluado mediante test A/B (Control vs Prototipo) bajo el marco regulatorio de Habeas Data (Ley 1581) y Circular SFC 029. La investigación de usuarios valida que la solución reduce realmente la carga cognitiva y mejora la auditabilidad, focalizada en una <strong>persona primaria — auditor de Customer Service</strong>, con dos personas secundarias para validación de inclusión: usuarios con diversidad cognitiva y adultos mayores con brecha digital.</p>
+  </div>
+
+  <h3>Cognotécnicas seleccionadas para cada punto</h3>
+  <table>
+    <thead><tr><th style="width: 8%">#</th><th style="width: 42%">Pregunta</th><th style="width: 25%">Cognotécnica</th><th style="width: 25%">Razón de elección</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Pasos de la entrevista</td><td>Línea de tiempo</td><td>Refleja la secuencia temporal del proceso</td></tr>
+      <tr><td>2</td><td>Recomendaciones</td><td>Mapa mental</td><td>Agrupa heurísticas radiales por dimensión</td></tr>
+      <tr><td>3</td><td>Aspectos a evitar</td><td>Cuadro sinóptico (Sí/No)</td><td>Contraste visual rápido entre prácticas</td></tr>
+      <tr><td>4</td><td>Elementos del Diag. Afinidad</td><td>Mapa conceptual</td><td>Relaciona conceptos jerárquicos</td></tr>
+      <tr><td>5</td><td>Herramientas para Afinidad</td><td>Cuadro comparativo</td><td>Pros/contras lado a lado</td></tr>
+      <tr><td>6</td><td>Aspectos User-Personas</td><td>Diagrama esquemático</td><td>Anatomía visual de una persona</td></tr>
+      <tr><td>7</td><td>Herramientas User-Personas</td><td>Cuadro comparativo</td><td>Pros/contras lado a lado</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="pagebreak"></div>
+
+<!-- ======= 1. PASOS ENTREVISTA ======= -->
+<section>
+  <h2>1. Pasos para realizar la Entrevista de Usuarios</h2>
+  <p><strong>Cognotécnica:</strong> Línea de tiempo. Cada paso se ilustra con su aplicación al proyecto Agentic Loop.</p>
+
+  <div class="timeline">
+    <div class="step">
+      <div class="n">01</div>
+      <div class="t">Definir el objetivo de investigación</div>
+      <div class="d">Hipótesis y preguntas de investigación. <em>Aplicado:</em> ¿Reduce el Event Log el tiempo de auditoría y aumenta la tasa de detección de fallos en cancelación de tarjeta vs chatbot bancario tradicional?</div>
+    </div>
+    <div class="step">
+      <div class="n">02</div>
+      <div class="t">Reclutamiento y muestreo</div>
+      <div class="d">Definir perfil del participante y criterios de inclusión/exclusión. <em>Aplicado:</em> 6 auditores CS de banca digital (persona primaria) + 4 secundarios (TDAH, adultos mayores) para inclusión.</div>
+    </div>
+    <div class="step">
+      <div class="n">03</div>
+      <div class="t">Diseñar la guía de entrevista</div>
+      <div class="d">Preguntas abiertas, embudos de detalle, escenarios. <em>Aplicado:</em> guion sobre incidentes reales de auditoría tras cancelación/modificación fallida en chatbot bancario.</div>
+    </div>
+    <div class="step">
+      <div class="n">04</div>
+      <div class="t">Pilotaje</div>
+      <div class="d">Probar la guía con 1–2 personas. <em>Aplicado:</em> ajustar terminología técnica (<code>max_tokens</code>, ToolResult) según familiaridad del auditor con APIs.</div>
+    </div>
+    <div class="step">
+      <div class="n">05</div>
+      <div class="t">Logística y consentimiento informado</div>
+      <div class="d">Plataforma, duración (45–60 min), grabación, ética. <em>Aplicado:</em> consentimiento bajo Ley 1581 (Habeas Data); datos bancarios siempre sintéticos en escenarios.</div>
+    </div>
+    <div class="step">
+      <div class="n">06</div>
+      <div class="t">Conducción de la entrevista</div>
+      <div class="d">Rapport, escucha activa, sondeos. <em>Aplicado:</em> mostrar mock-up del Agentic Loop con flujo de cancelación de tarjeta para reacción contextual.</div>
+    </div>
+    <div class="step">
+      <div class="n">07</div>
+      <div class="t">Registro y notas de campo</div>
+      <div class="d">Notas literales + observación no verbal. <em>Aplicado:</em> registrar momentos en que el auditor abre consolas paralelas o relee la transcripción como señal de desconfianza.</div>
+    </div>
+    <div class="step">
+      <div class="n">08</div>
+      <div class="t">Transcripción</div>
+      <div class="d">Verbatim o focused. <em>Aplicado:</em> transcripción focalizada en pasajes sobre trazabilidad, auditoría y verificación cruzada con el core bancario.</div>
+    </div>
+    <div class="step">
+      <div class="n">09</div>
+      <div class="t">Análisis temático</div>
+      <div class="d">Codificación abierta y axial. Insumo del Diagrama de Afinidad. <em>Aplicado:</em> tags como <code>falso_positivo_cancelacion</code>, <code>consola_paralela</code>, <code>riesgo_normativo</code>.</div>
+    </div>
+    <div class="step">
+      <div class="n">10</div>
+      <div class="t">Síntesis e insights</div>
+      <div class="d">Construcción de hallazgos accionables → user-personas y journey maps.</div>
+    </div>
+    <div class="step">
+      <div class="n">11</div>
+      <div class="t">Reporte y devolución</div>
+      <div class="d">Comunicación al equipo de diseño. <em>Aplicado:</em> recomendaciones priorizadas para iteración del prototipo.</div>
+    </div>
+  </div>
+</section>
+
+<div class="pagebreak"></div>
+
+<!-- ======= 2. RECOMENDACIONES ======= -->
+<section>
+  <h2>2. Recomendaciones para entrevistas de usuarios</h2>
+  <p><strong>Cognotécnica:</strong> Mapa mental con cinco dimensiones radiales.</p>
+
+  <div class="mindmap-container">
+    <img src="diagrams_output/01_recomendaciones_entrevista.png" alt="Mapa mental — Recomendaciones para entrevistas" style="max-width: 100%; height: auto;"/>
+    <div class="legend">Figura 1 — Mapa mental de recomendaciones para entrevistas de usuarios.</div>
+  </div>
+
+  <h3>Aplicación al proyecto Agentic Loop</h3>
+  <p>Para la <strong>persona primaria</strong> (auditor de Customer Service en banca digital), se prioriza lenguaje técnico-normativo (Habeas Data, Circular SFC 029, trazabilidad, ToolResult) y se pide narrativa de un caso real reciente de cancelación o reversión auditada. Para las <strong>personas secundarias</strong> de inclusión: con <strong>TDAH</strong> se priorizan sesiones cortas (≤30 min) y apoyos visuales; con <strong>adultos mayores</strong> el rapport debe extenderse y la escucha activa requiere más silencios productivos para evitar respuestas socialmente deseables sobre productos financieros.</p>
+</section>
+
+<div class="pagebreak"></div>
+
+<!-- ======= 3. ASPECTOS A EVITAR ======= -->
+<section>
+  <h2>3. Aspectos a evitar al realizar entrevistas con usuarios</h2>
+  <p><strong>Cognotécnica:</strong> Cuadro sinóptico contrastivo (Hacer / No hacer).</p>
+
+  <div class="vs-box">
+    <div class="col si">
+      <h4>✓ Sí — Buenas prácticas</h4>
+      <ul>
+        <li>Preguntas abiertas: "¿cómo fue esa experiencia?"</li>
+        <li>Hablar &lt; 30% del tiempo total</li>
+        <li>Validar sin juzgar</li>
+        <li>Profundizar con sondeos neutros</li>
+        <li>Revelar el prototipo solo cuando proceda</li>
+      </ul>
+    </div>
+    <div class="col no">
+      <h4>✗ No — Anti-patrones</h4>
+      <ul>
+        <li>Preguntas dirigidas: "¿no crees que X es mejor?"</li>
+        <li>Monologar o narrar el producto</li>
+        <li>Mostrar decepción/sorpresa por respuestas</li>
+        <li>Encadenar varias preguntas en una</li>
+        <li>Mostrar el prototipo antes de captar pain points</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Sesgos críticos a controlar</h3>
+  <table>
+    <thead><tr><th>Sesgo</th><th>Manifestación</th><th>Mitigación</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Confirmación</strong></td><td>Buscar respuestas que validan la hipótesis del Agentic Loop</td><td>Preguntar primero por el dolor, no por la solución</td></tr>
+      <tr><td><strong>Deseabilidad social</strong></td><td>El usuario dice que confía en la IA porque es lo "esperado"</td><td>Pedir incidente concreto, no opinión genérica</td></tr>
+      <tr><td><strong>Anclaje</strong></td><td>Mencionar "alucinación" condiciona al participante</td><td>Vocabulario neutro: "respuesta inesperada"</td></tr>
+      <tr><td><strong>Líder de la entrevista</strong></td><td>Sugerir respuesta en la pregunta</td><td>Preguntar "¿qué pasó después?" en vez de "¿el bot ejecutó la cancelación?"</td></tr>
+      <tr><td><strong>Halo experto / cumplimiento</strong></td><td>Auditores responden lo que "compliance esperaría"</td><td>Pedir relato de un caso real reciente de auditoría post-incidente bancario</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Errores frecuentes específicos en este proyecto</h3>
+  <ul>
+    <li><strong>Mostrar UI antes de tiempo:</strong> revelar el Event Log al inicio sesga la valoración del flujo actual de auditoría manual.</li>
+    <li><strong>Lenguaje técnico opaco fuera del rol:</strong> hablar de <code>stop_reason</code> con un adulto mayor invalida la respuesta; con auditores el término sí aplica si manejan APIs.</li>
+    <li><strong>Ignorar la experiencia de fallo previa:</strong> sin un incidente bancario real referenciable (caso de cancelación fallida), las respuestas son hipotéticas.</li>
+    <li><strong>Pedir datos reales del banco:</strong> riesgo de violación de Habeas Data; usar siempre datos sintéticos en escenarios.</li>
+    <li><strong>No verificar comprensión:</strong> con usuarios neurodivergentes, asumir que "sí" significa entender.</li>
+  </ul>
+</section>
+
+<div class="pagebreak"></div>
+
+<!-- ======= 4. DIAGRAMA AFINIDAD ======= -->
+<section>
+  <h2>4. Elementos clave del Diagrama de Afinidad</h2>
+  <p><strong>Cognotécnica:</strong> Mapa conceptual (jerárquico-relacional).</p>
+
+  <div class="mindmap-container">
+    <img src="diagrams_output/02_diagrama_afinidad.png" alt="Mapa conceptual — Elementos del Diagrama de Afinidad" style="max-width: 100%; height: auto;"/>
+    <div class="legend">Figura 2 — Mapa conceptual de los elementos del Diagrama de Afinidad.</div>
+  </div>
+
+  <h3>Síntesis de elementos clave</h3>
+  <ul>
+    <li><strong>Notas atómicas:</strong> cada sticky representa una observación única, en lenguaje del usuario.</li>
+    <li><strong>Construcción bottom-up:</strong> el patrón emerge desde los datos, no desde categorías predefinidas.</li>
+    <li><strong>Etiquetas (labels):</strong> nombres que sintetizan cada cluster con verbo + sustantivo.</li>
+    <li><strong>Trazabilidad:</strong> cada nota mantiene referencia a su entrevista origen para auditar el insight.</li>
+    <li><strong>Iteración:</strong> los grupos se reorganizan hasta lograr saturación temática.</li>
+    <li><strong>Salida accionable:</strong> insights y hipótesis priorizadas que alimentan personas y journey maps.</li>
+  </ul>
+</section>
+
+<div class="pagebreak"></div>
+
+<!-- ======= 5. HERRAMIENTAS AFINIDAD ======= -->
+<section>
+  <h2>5. Herramientas para Diagramas de Afinidad</h2>
+  <p><strong>Cognotécnica:</strong> Cuadro comparativo con ventajas y desventajas.</p>
+
+  <h3>5.1 Miro</h3>
+  <p>Pizarra colaborativa cloud-native con plantillas específicas para affinity diagrams, votación, timer y export a PDF/CSV.</p>
+  <div class="pros-cons">
+    <div class="pros"><strong>Ventajas</strong>
+      <ul>
+        <li>Colaboración multi-cursor en tiempo real</li>
+        <li>Plantillas listas (Affinity, Empathy, Personas)</li>
+        <li>Votación por puntos para priorizar clusters</li>
+        <li>Integraciones con Jira, Notion, Slack</li>
+        <li>Versión gratuita razonable (3 boards)</li>
+      </ul>
+    </div>
+    <div class="cons"><strong>Desventajas</strong>
+      <ul>
+        <li>Costo creciente con el equipo (~$8/usuario/mes)</li>
+        <li>Performance baja con &gt;500 stickies</li>
+        <li>Requiere conexión estable</li>
+        <li>Curva de aprendizaje para los atajos</li>
+        <li>Datos en cloud terceros: cuidado con datos sensibles</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>5.2 FigJam (Figma)</h3>
+  <p>Pizarra integrada al ecosistema Figma, ideal cuando el diseño UI vive en la misma plataforma.</p>
+  <div class="pros-cons">
+    <div class="pros"><strong>Ventajas</strong>
+      <ul>
+        <li>Integración nativa con Figma (handoff fluido)</li>
+        <li>UX moderno y rápido</li>
+        <li>Plantillas comunitarias gratuitas</li>
+        <li>Plan free generoso para estudiantes</li>
+        <li>Sticky notes con voting y stamping</li>
+      </ul>
+    </div>
+    <div class="cons"><strong>Desventajas</strong>
+      <ul>
+        <li>Funciones de moderación menos maduras que Miro</li>
+        <li>Menos integraciones empresariales</li>
+        <li>Sin soporte robusto offline</li>
+        <li>Limitaciones con archivos muy grandes</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>5.3 Mural</h3>
+  <p>Plataforma orientada a facilitación empresarial; foco en talleres asíncronos.</p>
+  <div class="pros-cons">
+    <div class="pros"><strong>Ventajas</strong>
+      <ul>
+        <li>"Facilitator superpowers" (timer, follow, lock)</li>
+        <li>Enterprise-grade SOC2 / privacidad</li>
+        <li>Plantillas avanzadas para Design Thinking</li>
+        <li>Modo presentación guiada</li>
+      </ul>
+    </div>
+    <div class="cons"><strong>Desventajas</strong>
+      <ul>
+        <li>Más caro y orientado a empresa</li>
+        <li>UX menos moderna que FigJam/Miro</li>
+        <li>Curva de adopción mayor</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Tabla comparativa</h3>
+  <table>
+    <thead><tr><th>Criterio</th><th>Miro</th><th>FigJam</th><th>Mural</th></tr></thead>
+    <tbody>
+      <tr><td>Colaboración real-time</td><td>★★★★★</td><td>★★★★★</td><td>★★★★☆</td></tr>
+      <tr><td>Plantillas para investigación</td><td>★★★★★</td><td>★★★★☆</td><td>★★★★★</td></tr>
+      <tr><td>Coste para equipo pequeño</td><td>★★★☆☆</td><td>★★★★★</td><td>★★☆☆☆</td></tr>
+      <tr><td>Integración con flujo UI</td><td>★★★☆☆</td><td>★★★★★</td><td>★★★☆☆</td></tr>
+      <tr><td>Privacidad / datos sensibles</td><td>★★★☆☆</td><td>★★★☆☆</td><td>★★★★★</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Elección para el proyecto:</strong> <em>FigJam</em> por la integración directa con el prototipo Figma del Agentic Loop y el coste para entornos académicos.</p>
+</section>
+
+<div class="pagebreak"></div>
+
+<!-- ======= 6. USER-PERSONAS ======= -->
+<section>
+  <h2>6. Aspectos clave para definir User-Personas</h2>
+  <p><strong>Cognotécnica:</strong> Diagrama esquemático (anatomía de una persona).</p>
+
+  <div class="mindmap-container">
+    <img src="diagrams_output/03_user_persona_anatomia.png" alt="Diagrama esquemático — Anatomía de una User-Persona" style="max-width: 100%; height: auto;"/>
+    <div class="legend">Figura 3 — Anatomía esquemática de una user-persona.</div>
+  </div>
+
+  <h3>Aplicación al proyecto: una persona primaria + dos secundarias de inclusión</h3>
+
+  <div class="persona-card" style="border-top: 6px solid var(--primary);">
+    <div class="role" style="color: var(--primary); font-weight: 700;">PRIMARIA — Auditor de Customer Service · banca digital</div>
+    <div class="name">Carlos — Auditor CS, 41 años · Bogotá</div>
+    <div class="quote">"Necesito demostrar a compliance qué hizo el agente, no qué dice que hizo. Hoy abro 3 consolas para reconstruir cada caso."</div>
+    <p><strong>Goal:</strong> verificar trazabilidad normativa de cancelaciones/reversiones del chatbot bancario sin abrir consolas paralelas. <strong>Pain:</strong> chatbots opacos que afirman completar operaciones sin evidencia técnica auditable. <strong>Motivación:</strong> evidencia técnica observable (Event Log), no narrativa probabilística. <strong>Marco normativo:</strong> Habeas Data (Ley 1581) + Circular SFC 029. <strong>Métrica de éxito:</strong> reducción de tiempo de auditoría por caso.</p>
+  </div>
+
+  <div class="persona-card">
+    <div class="role">Secundaria — Diversidad cognitiva (validación de inclusión)</div>
+    <div class="name">Ana — Profesional con TDAH, 32 años</div>
+    <div class="quote">"Si la IA me dice que ya está hecho pero no estoy segura, entro en bucle y termino haciéndolo yo a mano."</div>
+    <p><strong>Goal:</strong> ejecutar trámites bancarios sin re-verificar manualmente. <strong>Pain:</strong> texto extenso y ambiguo dispara su sobrecarga cognitiva. <strong>Motivación:</strong> reducir carga cognitiva extrínseca. <strong>Valida que:</strong> Stepper + Event Log son legibles para usuarios neurodivergentes.</p>
+  </div>
+
+  <div class="persona-card">
+    <div class="role">Secundaria — Brecha digital (validación de inclusión)</div>
+    <div class="name">Doña Elsa — Pensionada, 68 años</div>
+    <div class="quote">"Cuando la pantalla me dice cosas raras, mejor llamo a mi hija."</div>
+    <p><strong>Goal:</strong> hacer el trámite (cancelar tarjeta) sin asistencia familiar. <strong>Pain:</strong> indefensión aprendida frente a sistemas impredecibles. <strong>Motivación:</strong> control y dignidad. <strong>Valida que:</strong> manejo determinista de errores no induce indefensión aprendida.</p>
+  </div>
+</section>
+
+<div class="pagebreak"></div>
+
+<!-- ======= 7. HERRAMIENTAS USER-PERSONAS ======= -->
+<section>
+  <h2>7. Herramientas para crear User-Personas</h2>
+  <p><strong>Cognotécnica:</strong> Cuadro comparativo con ventajas y desventajas.</p>
+
+  <h3>7.1 Xtensio — User Persona Creator</h3>
+  <p>Plataforma especializada en plantillas editoriales para personas, lean canvas y one-pagers.</p>
+  <div class="pros-cons">
+    <div class="pros"><strong>Ventajas</strong>
+      <ul>
+        <li>Plantillas profesionales listas para presentación</li>
+        <li>Export a PDF / PNG con identidad cuidada</li>
+        <li>Plan free incluye persona básica</li>
+        <li>Bibliotecas de iconos / avatares incluidas</li>
+      </ul>
+    </div>
+    <div class="cons"><strong>Desventajas</strong>
+      <ul>
+        <li>Funciones avanzadas requieren plan pago (~$15/mes)</li>
+        <li>Personalización de layout limitada</li>
+        <li>Sin colaboración multi-cursor potente</li>
+        <li>Datos almacenados en cloud terceros</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>7.2 UXPressia</h3>
+  <p>Suite completa para UX research: personas, journey maps, impact maps con vinculación entre artefactos.</p>
+  <div class="pros-cons">
+    <div class="pros"><strong>Ventajas</strong>
+      <ul>
+        <li>Persona ↔ Journey map vinculados</li>
+        <li>Export profesional + modo presentación</li>
+        <li>Plantillas demográficas precargadas</li>
+        <li>Modo público y privado para portafolio</li>
+      </ul>
+    </div>
+    <div class="cons"><strong>Desventajas</strong>
+      <ul>
+        <li>Plan gratuito muy limitado (1 persona)</li>
+        <li>Coste alto en planes superiores ($24+/mes)</li>
+        <li>Curva de aprendizaje en módulos avanzados</li>
+        <li>UI menos pulida que Figma/FigJam</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>7.3 Figma + plantilla comunitaria</h3>
+  <p>Construir personas en Figma con plantillas comunitarias (e.g., "User Persona Template" de Romina Kavcic).</p>
+  <div class="pros-cons">
+    <div class="pros"><strong>Ventajas</strong>
+      <ul>
+        <li>Total flexibilidad de diseño</li>
+        <li>Mismo entorno que el prototipo UI</li>
+        <li>Gratuito para equipos pequeños</li>
+        <li>Trazabilidad: persona ↔ wireframe en mismo archivo</li>
+        <li>Versionado y comentarios integrados</li>
+      </ul>
+    </div>
+    <div class="cons"><strong>Desventajas</strong>
+      <ul>
+        <li>Requiere skills de diseño / Figma</li>
+        <li>Sin estructura de campos forzada (riesgo de inconsistencia)</li>
+        <li>Sin vinculación nativa con journey maps</li>
+        <li>Plantillas externas pueden quedar obsoletas</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Tabla comparativa</h3>
+  <table>
+    <thead><tr><th>Criterio</th><th>Xtensio</th><th>UXPressia</th><th>Figma + plantilla</th></tr></thead>
+    <tbody>
+      <tr><td>Velocidad de creación</td><td>★★★★★</td><td>★★★★☆</td><td>★★★☆☆</td></tr>
+      <tr><td>Calidad visual export</td><td>★★★★☆</td><td>★★★★★</td><td>★★★★★</td></tr>
+      <tr><td>Flexibilidad / personalización</td><td>★★☆☆☆</td><td>★★★☆☆</td><td>★★★★★</td></tr>
+      <tr><td>Vinculación con otros artefactos</td><td>★★☆☆☆</td><td>★★★★★</td><td>★★★★☆</td></tr>
+      <tr><td>Coste</td><td>★★★☆☆</td><td>★★☆☆☆</td><td>★★★★★</td></tr>
+      <tr><td>Apto para equipos académicos</td><td>★★★☆☆</td><td>★★★☆☆</td><td>★★★★★</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Elección para el proyecto:</strong> <em>Figma + plantilla comunitaria</em>, manteniendo a Carlos (persona primaria) en el mismo archivo donde vive el prototipo del flujo de cancelación de tarjeta. Esto preserva trazabilidad nota verbatim → cluster (FigJam) → persona Carlos → wireframe del Stepper/UI Cards/Event Log → versión del A/B test.</p>
+</section>
+
+<div class="pagebreak"></div>
+
+<!-- ======= CONCLUSIONES ======= -->
+<section>
+  <h2>8. Conclusiones y aplicación al proyecto</h2>
+
+  <p>La investigación de usuarios no es un complemento sino el <strong>fundamento de validación</strong> del proyecto Agentic Loop aplicado al dominio de banca digital colombiana. La hipótesis central — que una interfaz determinista reduce el tiempo de auditoría y aumenta la tasa de detección de fallos en operaciones financieras frente a un chatbot probabilístico — solo puede demostrarse mediante evidencia cualitativa rigurosa que se traduzca en métricas cuantitativas (Tasa de Éxito de la Tarea, Time-on-task, SUS, Índice de Confianza Post-Interacción Likert 1–7 con n≥10).</p>
+
+  <h3>Cadena de artefactos prevista</h3>
+  <ol>
+    <li><strong>Entrevistas</strong> a 6 auditores CS (primaria) + 4 secundarios (TDAH + adultos mayores) = 10 participantes.</li>
+    <li><strong>Diagrama de Afinidad</strong> en FigJam para clusters de hallazgos sobre auditoría manual actual.</li>
+    <li><strong>User-Personas</strong> en Figma — Carlos como primaria, Ana y Doña Elsa como validación de inclusión.</li>
+    <li><strong>Heurísticas de Nielsen</strong> revisadas a la luz de los pain points reales (foco en <em>Sad Paths</em>).</li>
+    <li><strong>Test A/B moderado</strong> con escenario de estrés: cancelación de tarjeta XX1234 con timeout 503 inducido y prompt configurado para que la IA mienta.</li>
+  </ol>
+
+  <h3>Decisiones de diseño justificadas por la investigación</h3>
+  <ul>
+    <li><strong>Event Log estructurado:</strong> validado por la necesidad normativa de Carlos (Habeas Data, SFC 029) — decisión rectora del proyecto.</li>
+    <li><strong>UI Cards de herramientas:</strong> validado por la necesidad de auditar inputs/outputs del <code>cancel_product()</code> sin abrir consolas paralelas.</li>
+    <li><strong>Visibilidad de iteraciones (steppers):</strong> validada secundariamente por Ana (carga cognitiva) y por Carlos (anticipación del flujo agéntico).</li>
+    <li><strong>Manejo determinista de errores:</strong> validado por la indefensión aprendida de Doña Elsa frente a sistemas que mienten.</li>
+  </ul>
+
+  <h3>Riesgos metodológicos identificados</h3>
+  <ul>
+    <li><strong>Sesgo de confirmación del investigador:</strong> mitigado con protocolo neutral, vocabulario sin anclajes ("respuesta inesperada" en vez de "alucinación") y triangulación con segundo evaluador.</li>
+    <li><strong>Reclutamiento de auditores reales del sector financiero:</strong> sin contactos directos, riesgo de muestra sesgada hacia perfiles análogos (estudiantes con experiencia similar).</li>
+    <li><strong>Sensibilidad de datos bancarios (Ley 1581):</strong> el prototipo debe usar datos sintéticos exclusivamente; consentimiento informado robusto y eliminación post-estudio.</li>
+    <li><strong>Tiempo limitado del curso:</strong> no hay margen para más de un ciclo de testing; priorizar saturación temática sobre cobertura.</li>
+  </ul>
+
+  <p style="margin-top: 18pt; padding: 8pt 12pt; background: var(--soft); border-radius: 4pt; font-size: 9.5pt; color: var(--muted);">
+    <strong>Entrega:</strong> documento elaborado para la Actividad 7 — Taller Investigación de Usuarios, asignatura Fundamentos IHC, Maestría en Computación para el Desarrollo de Aplicaciones Inteligentes (CODING), Universidad del Valle. Las cognotécnicas se construyeron específicamente como insumos accionables del proyecto de curso "Agentic Loop UI" delimitado al dominio de banca digital colombiana — flujo de cancelación de tarjeta de crédito con marco regulatorio Ley 1581 + Circular SFC 029.
+  </p>
+</section>
+
+</body>
+</html>

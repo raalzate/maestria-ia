@@ -1,0 +1,38 @@
+{
+  "name": "project",
+  "dependencies": {
+    "tessl/pypi-faster-whisper": {
+      "version": "1.2.0"
+    },
+    "tessl/pypi-langchain-community": {
+      "version": "0.0.0"
+    },
+    "tessl/pypi-langchain-google-genai": {
+      "version": "2.1.0"
+    },
+    "tessl/pypi-langgraph": {
+      "version": "1.0.3"
+    },
+    "tessl/pypi-pydantic": {
+      "version": "2.11.0"
+    },
+    "tessl/pypi-pypdf": {
+      "version": "6.0.0"
+    },
+    "tessl/pypi-python-dotenv": {
+      "version": "1.1.0"
+    },
+    "tessl/pypi-streamlit": {
+      "version": "1.50.0"
+    },
+    "tessl-labs/intent-integrity-kit": {
+      "version": "2.7.16"
+    },
+    "tessl/pypi-pytest": {
+      "version": "8.4.0"
+    },
+    "tessl/pypi-pytest-mock": {
+      "version": "3.14.0"
+    }
+  }
+}

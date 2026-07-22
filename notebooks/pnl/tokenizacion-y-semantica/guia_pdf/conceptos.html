@@ -1,0 +1,2695 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Raúl Andrés Alzate Gómez" />
+  <meta name="dcterms.date" content="2026-01-01" />
+  <title>Guía de estudio: Tokenización, Semántica vectorial y Embeddings</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="style.css" />
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Guía de estudio: Tokenización, Semántica vectorial y
+Embeddings</h1>
+<p class="subtitle">Preparación para práctica y quiz — PLN con Deep
+Learning</p>
+<p class="author">Raúl Andrés Alzate Gómez</p>
+<p class="date">2026</p>
+</header>
+<h1 id="el-continuum-del-pln">El continuum del PLN</h1>
+<p>Todo el curso recorre una misma idea: <strong>convertir lenguaje en
+vectores donde la geometría codifica el significado</strong>. El texto
+pasa por 5 etapas; cada una resuelve una pregunta y alimenta a la
+siguiente.</p>
+<div class="pipeline">
+<div class="stage s1">
+<div class="stnum">
+1
+</div>
+<div class="stbody">
+<div class="sttitle">
+Tokenización
+</div>
+<div class="stq">
+¿Cómo partir el texto en unidades?
+</div>
+<div class="pills">
+<span>char</span><span>palabra</span><span>subpalabra</span><span>byte</span>
+</div>
+<div class="stex">
+<b>Ej.</b> <code>“gatos”</code> → <code>gato</code> + <code>##s</code>
+</div>
+</div>
+</div>
+<div class="stage s2">
+<div class="stnum">
+2
+</div>
+<div class="stbody">
+<div class="sttitle">
+Representación dispersa
+</div>
+<div class="stq">
+¿Cómo comparar documentos?
+</div>
+<div class="pills">
+<span>TF</span><span>TF-IDF</span><span>coseno</span>
+</div>
+<div class="stex">
+<b>Ej.</b> un documento → vector de 10 000 números, casi todos en cero
+</div>
+</div>
+</div>
+<div class="stage s3">
+<div class="stnum">
+3
+</div>
+<div class="stbody">
+<div class="sttitle">
+Embeddings densos
+</div>
+<div class="stq">
+¿Cómo capturar significado en pocos números?
+</div>
+<div class="pills">
+<span>Word2Vec</span><span>GloVe</span><span>FastText</span>
+</div>
+<div class="stex">
+<b>Ej.</b> <code>rey</code> → vector denso de 300 números
+</div>
+</div>
+</div>
+<div class="stage s4">
+<div class="stnum">
+4
+</div>
+<div class="stbody">
+<div class="sttitle">
+Embeddings contextuales
+</div>
+<div class="stq">
+¿Cómo distinguir significados según el contexto?
+</div>
+<div class="pills">
+<span>ELMo</span><span>BERT/BETO</span><span>GPT</span>
+</div>
+<div class="stex">
+<b>Ej.</b> <code>banco</code> (dinero) ≠ <code>banco</code> (asiento)
+</div>
+</div>
+</div>
+<div class="stage s5">
+<div class="stnum">
+5
+</div>
+<div class="stbody">
+<div class="sttitle">
+Embeddings de oración
+</div>
+<div class="stq">
+¿Cómo comparar frases completas?
+</div>
+<div class="pills">
+<span>SBERT</span><span>MiniLM</span><span>bge-m3</span>
+</div>
+<div class="stex">
+<b>Ej.</b> <code>“el gato duerme”</code> ≈ <code>“el felino
+descansa”</code>
+</div>
+</div>
+</div>
+</div>
+<p><strong>Por qué cada salto:</strong> cada técnica nace para arreglar
+una falla de la anterior.</p>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 73%" />
+</colgroup>
+<thead>
+<tr>
+<th>Salto</th>
+<th>Falla que arregla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Crudo → Tokenización</td>
+<td>El modelo necesita unidades discretas y controlar palabras nuevas
+(OOV)</td>
+</tr>
+<tr>
+<td>TF → TF-IDF</td>
+<td>Las palabras muy frecuentes (<code>el</code>, <code>de</code>) no
+aportan y distorsionan</td>
+</tr>
+<tr>
+<td>TF-IDF → Word2Vec</td>
+<td>Vectores de miles de ceros → densos y cortos que capturan
+semántica</td>
+</tr>
+<tr>
+<td>Word2Vec → FastText</td>
+<td>Palabras nuevas y morfología del español
+(<code>caminar</code>/<code>caminé</code>)</td>
+</tr>
+<tr>
+<td>Estático → BERT</td>
+<td>Una palabra tiene un solo vector aunque signifique cosas distintas
+(polisemia)</td>
+</tr>
+<tr>
+<td>BERT → SBERT</td>
+<td>Comparar oraciones con BERT crudo es lentísimo</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break">
+
+</div>
+<h1 id="glosario-de-siglas-y-términos">Glosario de siglas y
+términos</h1>
+<p>Casi todo en PLN se nombra con siglas en inglés. Esta tabla las
+traduce y explica en una frase. Úsala como referencia mientras lees el
+resto de la guía.</p>
+<p><strong>Generales</strong></p>
+<table>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 42%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significa (inglés)</th>
+<th>Qué es (en simple)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PLN / NLP</strong></td>
+<td>(Natural Language Processing)</td>
+<td>Procesamiento de Lenguaje Natural: que la máquina entienda/genere
+texto</td>
+</tr>
+<tr>
+<td><strong>IA / AI</strong></td>
+<td>(Artificial Intelligence)</td>
+<td>Inteligencia Artificial</td>
+</tr>
+<tr>
+<td><strong>LLM</strong></td>
+<td>Large Language Model</td>
+<td>Modelo de lenguaje grande (GPT, LLaMA…)</td>
+</tr>
+<tr>
+<td><strong>OOV</strong></td>
+<td>Out-Of-Vocabulary</td>
+<td>Palabra “fuera de vocabulario”: no se vio al entrenar</td>
+</tr>
+<tr>
+<td><strong>token</strong></td>
+<td>—</td>
+<td>Unidad mínima de texto (palabra, subpalabra o carácter)</td>
+</tr>
+<tr>
+<td><strong>corpus</strong></td>
+<td>—</td>
+<td>Colección grande de textos para entrenar</td>
+</tr>
+<tr>
+<td><strong>embedding</strong></td>
+<td>—</td>
+<td>Vector de números que representa texto</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tokenización</strong></p>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 42%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significa</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BPE</strong></td>
+<td>Byte-Pair Encoding</td>
+<td>Fusiona los pares de caracteres más frecuentes</td>
+</tr>
+<tr>
+<td><strong>WordPiece</strong></td>
+<td>—</td>
+<td>Como BPE, pero fusiona lo que más sube la probabilidad; usa
+<code>##</code></td>
+</tr>
+<tr>
+<td><strong>Unigram</strong></td>
+<td>—</td>
+<td>Parte de un vocab grande y poda lo inútil</td>
+</tr>
+<tr>
+<td><strong>EM</strong></td>
+<td>Expectation-Maximization</td>
+<td>Algoritmo que ajusta probabilidades iterando</td>
+</tr>
+<tr>
+<td><strong>wwm</strong></td>
+<td>Whole Word Masking</td>
+<td>Enmascara palabras completas al entrenar (BETO usa esto)</td>
+</tr>
+<tr>
+<td><strong>cased</strong></td>
+<td>—</td>
+<td>Distingue mayúsculas/minúsculas (<code>Casa</code> ≠
+<code>casa</code>)</td>
+</tr>
+<tr>
+<td><strong>SBW</strong></td>
+<td>Spanish Billion Words</td>
+<td>Corpus estándar en español (~1 800 M de tokens)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Semántica vectorial clásica</strong></p>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 42%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significa</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VSM</strong></td>
+<td>Vector Space Model</td>
+<td>Representar documentos como vectores</td>
+</tr>
+<tr>
+<td><strong>TF</strong></td>
+<td>Term Frequency</td>
+<td>Cuántas veces aparece una palabra en un documento</td>
+</tr>
+<tr>
+<td><strong>IDF</strong></td>
+<td>Inverse Document Frequency</td>
+<td>Qué tan rara/informativa es una palabra</td>
+</tr>
+<tr>
+<td><strong>TF-IDF</strong></td>
+<td>TF × IDF</td>
+<td>Frecuente aquí <strong>y</strong> rara en el resto</td>
+</tr>
+<tr>
+<td><strong>L1 / L2</strong></td>
+<td>—</td>
+<td>Normas: L1 = suma de absolutos; L2 = raíz de cuadrados (el
+“largo”)</td>
+</tr>
+<tr>
+<td><strong>IR</strong></td>
+<td>Information Retrieval</td>
+<td>Recuperación de información (buscadores)</td>
+</tr>
+<tr>
+<td><strong>PCA</strong></td>
+<td>Principal Component Analysis</td>
+<td>Reduce dimensiones conservando la varianza</td>
+</tr>
+<tr>
+<td><strong>t-SNE</strong></td>
+<td>t-distributed Stochastic Neighbor Embedding</td>
+<td>Reduce dimensiones conservando vecindades</td>
+</tr>
+<tr>
+<td><strong>LSA</strong></td>
+<td>Latent Semantic Analysis</td>
+<td>Método clásico de temas por matriz de conteos</td>
+</tr>
+<tr>
+<td><strong>PPMI</strong></td>
+<td>Positive Pointwise Mutual Information</td>
+<td>Peso de co-ocurrencia entre palabras</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Embeddings y modelos</strong></p>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 42%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significa</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CBOW</strong></td>
+<td>Continuous Bag-Of-Words</td>
+<td>Word2Vec que predice la palabra desde el contexto</td>
+</tr>
+<tr>
+<td><strong>Skip-gram</strong></td>
+<td>—</td>
+<td>Word2Vec que predice el contexto desde la palabra</td>
+</tr>
+<tr>
+<td><strong>GloVe</strong></td>
+<td>Global Vectors</td>
+<td>Embeddings desde co-ocurrencia global</td>
+</tr>
+<tr>
+<td><strong>FastText</strong></td>
+<td>—</td>
+<td>Word2Vec + n-gramas de caracteres (maneja OOV)</td>
+</tr>
+<tr>
+<td><strong>BERT</strong></td>
+<td>Bidirectional Encoder Representations from Transformers</td>
+<td>Modelo contextual bidireccional</td>
+</tr>
+<tr>
+<td><strong>BETO</strong></td>
+<td>—</td>
+<td>El BERT entrenado en español</td>
+</tr>
+<tr>
+<td><strong>MLM</strong></td>
+<td>Masked Language Modeling</td>
+<td>Tarea: adivinar palabras tapadas</td>
+</tr>
+<tr>
+<td><strong>NSP</strong></td>
+<td>Next Sentence Prediction</td>
+<td>Tarea: ¿esta frase sigue a la otra?</td>
+</tr>
+<tr>
+<td><strong>ELMo</strong></td>
+<td>Embeddings from Language Models</td>
+<td>Primer embedding contextual (con LSTM)</td>
+</tr>
+<tr>
+<td><strong>GPT</strong></td>
+<td>Generative Pre-trained Transformer</td>
+<td>LLM generativo (decoder)</td>
+</tr>
+<tr>
+<td><strong>SBERT</strong></td>
+<td>Sentence-BERT</td>
+<td>BERT adaptado para comparar oraciones por coseno</td>
+</tr>
+<tr>
+<td><strong>STS</strong></td>
+<td>Semantic Textual Similarity</td>
+<td>Tarea de medir parecido entre frases</td>
+</tr>
+<tr>
+<td><strong>MPNet / MiniLM</strong></td>
+<td>—</td>
+<td>Arquitecturas eficientes para embeddings de oración</td>
+</tr>
+<tr>
+<td><strong>bge-m3</strong></td>
+<td>BAAI General Embedding (m3)</td>
+<td>Modelo multilingüe top para recuperación</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Aplicaciones</strong></p>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 42%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significa</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NER</strong></td>
+<td>Named Entity Recognition</td>
+<td>Detectar entidades (personas, fechas, enfermedades…)</td>
+</tr>
+<tr>
+<td><strong>IOB</strong></td>
+<td>Inside-Outside-Begin</td>
+<td>Esquema de etiquetas: <code>B_</code> inicio, <code>I_</code>
+dentro, <code>O</code> fuera</td>
+</tr>
+<tr>
+<td><strong>RAG</strong></td>
+<td>Retrieval-Augmented Generation</td>
+<td>Buscar contexto y dárselo a un LLM para responder</td>
+</tr>
+<tr>
+<td><strong>FAISS</strong></td>
+<td>Facebook AI Similarity Search</td>
+<td>Librería para buscar vectores similares a gran escala</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break">
+
+</div>
+<h1 id="parte-i-tokenización">PARTE I — Tokenización</h1>
+<h2 id="qué-es-la-tokenización-y-por-qué-importa">1.1 Qué es la
+tokenización y por qué importa</h2>
+<p>La <strong>tokenización</strong> es el primer eslabón de cualquier
+pipeline de PLN: convierte una secuencia continua de caracteres en una
+lista discreta de <strong>tokens</strong> que el modelo manipula como
+vectores.</p>
+<p>La elección del esquema condiciona cuatro cosas:</p>
+<ul>
+<li><strong>Tamaño de la matriz de embeddings</strong> (vocabulario ×
+dimensión).</li>
+<li><strong>Longitud media de la secuencia</strong> (la atención del
+Transformer es cuadrática en la longitud).</li>
+<li><strong>Capacidad de manejar palabras desconocidas</strong> (OOV,
+<em>out-of-vocabulary</em>) y morfología.</li>
+<li><strong>Transferencia entre idiomas</strong> (cobertura Unicode,
+scripts no latinos).</li>
+</ul>
+<h2 id="familias-de-algoritmos">1.2 Familias de algoritmos</h2>
+<table>
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 19%" />
+<col style="width: 21%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr>
+<th>Estrategia</th>
+<th>Unidad</th>
+<th>Ventaja</th>
+<th>Desventaja</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Carácter</strong></td>
+<td>1 char</td>
+<td>Sin OOV, vocab mínimo (~100)</td>
+<td>Secuencias muy largas, pierde semántica de palabra</td>
+</tr>
+<tr>
+<td><strong>Palabra</strong></td>
+<td>palabra completa</td>
+<td>Semántica directa</td>
+<td>Vocab enorme, OOV severo, mal con flexión</td>
+</tr>
+<tr>
+<td><strong>Subpalabra</strong></td>
+<td>morfemas / fragmentos</td>
+<td>Balance: poco OOV + secuencias razonables</td>
+<td>Requiere entrenamiento</td>
+</tr>
+<tr>
+<td><strong>Byte</strong></td>
+<td>1 byte UTF-8</td>
+<td>Universal multi-idioma</td>
+<td>Secuencias aún más largas que char</td>
+</tr>
+</tbody>
+</table>
+<p>Los modelos <em>state-of-the-art</em> (BERT, GPT, T5, LLaMA) usan
+<strong>subpalabra</strong>. Ejemplo: la palabra
+<code>tokenización</code> segmentada por cada estrategia:</p>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 23%" />
+<col style="width: 23%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr>
+<th>Estrategia</th>
+<th>Resultado</th>
+<th style="text-align: right;">Nº tokens</th>
+<th>Comentario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Carácter</td>
+<td><code>t o k e n i z a c i ó n</code></td>
+<td style="text-align: right;">12</td>
+<td>Secuencia larguísima</td>
+</tr>
+<tr>
+<td>Palabra</td>
+<td><code>tokenización</code></td>
+<td style="text-align: right;">1</td>
+<td><code>&lt;unk&gt;</code> si no estaba en el vocab</td>
+</tr>
+<tr>
+<td>BPE</td>
+<td><code>token</code> + <code>ización</code></td>
+<td style="text-align: right;">2</td>
+<td>Fusiones por frecuencia</td>
+</tr>
+<tr>
+<td>WordPiece</td>
+<td><code>token</code> + <code>##ización</code></td>
+<td style="text-align: right;">2</td>
+<td>Fusiones por verosimilitud</td>
+</tr>
+<tr>
+<td>Unigram</td>
+<td><code>token</code>+<code>ización</code> <em>(o)</em>
+<code>tokeni</code>+<code>zación</code></td>
+<td style="text-align: right;">2</td>
+<td>Varias segmentaciones posibles</td>
+</tr>
+</tbody>
+</table>
+<h2 id="byte-pair-encoding-bpe">1.3 Byte-Pair Encoding (BPE)</h2>
+<p>Algoritmo de compresión adaptado a PLN por <strong>Sennrich, Haddow
+&amp; Birch (2016)</strong>.</p>
+<p><strong>Algoritmo (4 pasos):</strong></p>
+<ol type="1">
+<li>Inicializa el vocabulario con <strong>todos los caracteres</strong>
+del corpus.</li>
+<li>Cuenta la frecuencia de <strong>pares adyacentes</strong> en el
+texto tokenizado por carácter.</li>
+<li>Fusiona el par <strong>más frecuente</strong> en un símbolo
+nuevo.</li>
+<li>Repite 2–3 hasta alcanzar el tamaño de vocabulario objetivo.</li>
+</ol>
+<p><strong>Propiedades:</strong> determinista (mismo corpus + tamaño →
+mismas fusiones), <em>greedy</em> (nunca revisa decisiones previas),
+vocabulario abierto (cualquier palabra es representable, en el peor caso
+como secuencia de caracteres).</p>
+<p><strong>Ejemplo.</strong> Corpus
+<code>low low lowest newer wider</code>. Tras varias fusiones BPE
+produce piezas como <code>low</code>, <code>er</code>, <code>est</code>,
+<code>new</code>, <code>wid</code>. La palabra OOV <code>lowering</code>
+se segmenta como <code>low + er + ing</code>.</p>
+<p>Modelos que lo usan: <strong>GPT-2/3/4, RoBERTa, LLaMA</strong>.</p>
+<h2 id="wordpiece-el-de-bert-y-beto">1.4 WordPiece — el de BERT y
+BETO</h2>
+<p>Variante de BPE (<strong>Schuster &amp; Nakajima, 2012</strong>;
+popularizada por <strong>BERT, 2018</strong>).</p>
+<p><strong>Diferencia clave con BPE:</strong> en vez de fusionar el par
+<em>más frecuente</em>, fusiona el par que <strong>maximiza la
+verosimilitud</strong> del corpus bajo un modelo unigrama:</p>
+<p><span class="math display">\text{score}(A, B) = \frac{P(AB)}{P(A)
+\cdot P(B)}</span></p>
+<div class="callout plain">
+<p>“¿Vale la pena pegar la pieza <span class="math inline">A</span> con
+la pieza <span class="math inline">B</span>?”. Compara qué tan seguido
+aparecen <strong>juntas</strong> (<span
+class="math inline">P(AB)</span>) contra lo que se esperaría si fueran
+<strong>independientes</strong> (<span class="math inline">P(A)\cdot
+P(B)</span>).</p>
+<ul>
+<li><span class="math inline">P(AB)</span> = probabilidad de ver
+<code>AB</code> pegadas.</li>
+<li><span class="math inline">P(A)</span>, <span
+class="math inline">P(B)</span> = probabilidad de cada pieza por
+separado.</li>
+</ul>
+</div>
+<div class="callout example">
+<p>Si <code>ción</code> casi siempre aparece tras <code>iza</code>
+(<code>organiza+ción</code>, <code>realiza+ción</code>), entonces <span
+class="math inline">P(\text{ización})</span> es alto comparado con <span
+class="math inline">P(\text{iza})\cdot P(\text{ción})</span> → score
+alto → conviene fusionarlas. Si dos piezas solo coinciden por azar, el
+score ≈ 1 y no se fusionan. BPE solo miraría la frecuencia bruta;
+WordPiece mira si la unión <strong>es informativa</strong>.</p>
+</div>
+<p><strong>Notación distintiva:</strong> marca las subpalabras
+<em>internas</em> con <code>##</code>:</p>
+<ul>
+<li><code>tokenization</code> → <code>token</code>,
+<code>##ization</code></li>
+<li><code>playing</code> → <code>play</code>, <code>##ing</code></li>
+</ul>
+<p><strong>Tokens especiales de BERT:</strong></p>
+<table>
+<colgroup>
+<col style="width: 43%" />
+<col style="width: 56%" />
+</colgroup>
+<thead>
+<tr>
+<th>Token</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[CLS]</code></td>
+<td>Marca el inicio; su embedding agregado se usa para clasificación de
+secuencia</td>
+</tr>
+<tr>
+<td><code>[SEP]</code></td>
+<td>Separador de segmentos (par de oraciones, pregunta/contexto)</td>
+</tr>
+<tr>
+<td><code>[PAD]</code></td>
+<td>Relleno hasta una longitud fija</td>
+</tr>
+<tr>
+<td><code>[MASK]</code></td>
+<td>Posición enmascarada para el preentrenamiento MLM</td>
+</tr>
+<tr>
+<td><code>[UNK]</code></td>
+<td>Carácter o palabra fuera del vocabulario</td>
+</tr>
+</tbody>
+</table>
+<h2 id="modelo-unigram">1.5 Modelo Unigram</h2>
+<p>Propuesto por <strong>Kudo (2018)</strong>; base por defecto de
+SentencePiece.</p>
+<p><strong>Idea:</strong> asume un modelo de lenguaje de unigramas sobre
+subpalabras y entrena las probabilidades con <strong>EM
+(Expectation-Maximization)</strong>: parte de un vocabulario grande,
+ajusta las probabilidades <span class="math inline">p(x_i)</span>, y
+<strong>poda</strong> iterativamente las subpalabras de menor utilidad
+hasta llegar al <code>vocab_size</code>.</p>
+<p><strong>Ventaja:</strong> a diferencia de BPE (segmentación única),
+Unigram puede <strong>muestrear</strong> segmentaciones alternativas →
+actúa como <em>data augmentation</em> (regularización por
+subpalabra).</p>
+<p>Modelos que lo usan: <strong>ALBERT, T5, XLNet, mBART,
+mT5</strong>.</p>
+<h2 id="sentencepiece">1.6 SentencePiece</h2>
+<p>Implementación de Google (<strong>Kudo &amp; Richardson,
+2018</strong>) que unifica BPE, Unigram, Word y Char bajo una misma API
+y resuelve dos problemas prácticos:</p>
+<ol type="1">
+<li><strong>Procesa texto en bruto</strong> (sin pretokenizar por
+espacios). Trata el espacio como un símbolo más (<code>▁</code>, U+2581)
+→ funciona en idiomas sin separadores (japonés, chino, tailandés).</li>
+<li><strong>Tokenización + destokenización determinista:</strong> la
+inversa reconstruye el texto exacto.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Operación</th>
+<th>Entrada</th>
+<th>Salida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>encode</code></td>
+<td><code>"Hola mundo"</code></td>
+<td><code>["▁Hola", "▁mundo"]</code></td>
+</tr>
+<tr>
+<td><code>decode</code></td>
+<td><code>["▁Hola", "▁mundo"]</code></td>
+<td><code>"Hola mundo"</code></td>
+</tr>
+</tbody>
+</table>
+<p>El símbolo <code>▁</code> (U+2581) marca el espacio que precede a
+cada palabra; por eso <code>decode</code> recupera los espacios
+exactos.</p>
+<p><strong>Parámetros clave:</strong> <code>model_type</code>
+(<code>unigram</code>/<code>bpe</code>/<code>word</code>/<code>char</code>),
+<code>vocab_size</code>, <code>character_coverage</code>
+(<code>1.0</code> para es/en; <code>0.9995</code> para zh/ja),
+<code>user_defined_symbols</code> (tokens preservados como
+<code>&lt;sep&gt;</code>, <code>&lt;cls&gt;</code>),
+<code>input_sentence_size</code> (subsampling de frases).</p>
+<h2 id="beto-bert-en-español-el-del-taller">1.7 BETO — BERT en español
+(el del taller)</h2>
+<p><strong>BETO</strong> =
+<code>dccuchile/bert-base-spanish-wwm-cased</code>: un BERT preentrenado
+en español con tokenizador <strong>WordPiece</strong>. El nombre dice
+cómo se entrenó: <code>wwm</code> = <em>whole word masking</em> (tapa
+palabras completas, no fragmentos) y <code>cased</code> = distingue
+mayúsculas (<code>Casa</code> ≠ <code>casa</code>). Ejemplo real del
+taller (frase del dataset biomédico):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tok <span class="op">=</span> AutoTokenizer.from_pretrained(<span class="st">&quot;dccuchile/bert-base-spanish-wwm-cased&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tok.tokenize(<span class="st">&quot;Abuela materna con cancer de mama a los 70 años .&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># → [&#39;Abuela&#39;,&#39;materna&#39;,&#39;con&#39;,&#39;cancer&#39;,&#39;de&#39;,&#39;mama&#39;,&#39;a&#39;,&#39;los&#39;,&#39;7&#39;,&#39;##0&#39;,&#39;años&#39;,&#39;.&#39;]</span></span></code></pre></div>
+<p>Observa: <code>70</code> se parte en <code>7 ##0</code> (WordPiece),
+y al codificar con <code>tokenizer(...)</code> se añaden
+<code>[CLS]</code> al inicio y <code>[SEP]</code> al final.</p>
+<h2 id="spanish-billion-words-el-corpus">1.8 Spanish Billion Words (el
+corpus)</h2>
+<p>Corpus de ~<strong>1 800 millones</strong> de tokens en español
+(Wikipedia + web). ~47 M de oraciones, ~4.7 GB. Es el <em>estándar</em>
+de PLN en español (rol análogo a WikiText-103 en inglés). Por su tamaño,
+se trocea en archivos y se usa <code>streaming=True</code> +
+<code>input_sentence_size</code> al entrenar.</p>
+<h2 id="tabla-comparativa-de-algoritmos-de-tokenización">1.9 Tabla
+comparativa de algoritmos de tokenización</h2>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 22%" />
+<col style="width: 18%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>Criterio</th>
+<th>BPE</th>
+<th>WordPiece</th>
+<th>Unigram</th>
+<th>SentencePiece</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Criterio de fusión</strong></td>
+<td>Par más frecuente</td>
+<td>Par que más sube la verosimilitud</td>
+<td>Poda por pérdida de likelihood (EM)</td>
+<td>Envuelve BPE/Unigram</td>
+</tr>
+<tr>
+<td><strong>Dirección</strong></td>
+<td>Construye (merge)</td>
+<td>Construye (merge)</td>
+<td>Reduce (prune)</td>
+<td>Según <code>model_type</code></td>
+</tr>
+<tr>
+<td><strong>Marcador</strong></td>
+<td>(ninguno)</td>
+<td><code>##</code> interno</td>
+<td><code>▁</code> (espacio)</td>
+<td><code>▁</code> (espacio)</td>
+</tr>
+<tr>
+<td><strong>Pretokeniza por espacios</strong></td>
+<td>Sí</td>
+<td>Sí</td>
+<td>Sí</td>
+<td><strong>No</strong> (texto crudo)</td>
+</tr>
+<tr>
+<td><strong>Segmentación múltiple</strong></td>
+<td>No (única)</td>
+<td>No</td>
+<td><strong>Sí</strong> (muestrea)</td>
+<td>Si usa Unigram</td>
+</tr>
+<tr>
+<td><strong>Maneja idiomas sin espacios</strong></td>
+<td>Mal</td>
+<td>Mal</td>
+<td>Bien</td>
+<td><strong>Excelente</strong></td>
+</tr>
+<tr>
+<td><strong>Modelos</strong></td>
+<td>GPT-2/3/4, RoBERTa, LLaMA</td>
+<td>BERT, BETO, DistilBERT</td>
+<td>ALBERT, T5, XLNet</td>
+<td>mT5, NLLB, LLaMA-2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ejemplos-en-python-tokenizadores">1.10 Ejemplos en Python:
+tokenizadores</h2>
+<p><strong>(a) Entrenar y comparar BPE / Unigram con
+SentencePiece:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sentencepiece <span class="im">as</span> spm</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenar un modelo BPE de 8000 piezas sobre un corpus de texto plano</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>spm.SentencePieceTrainer.train(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">input</span><span class="op">=</span><span class="st">&quot;corpus_es.txt&quot;</span>, model_prefix<span class="op">=</span><span class="st">&quot;bpe_es&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    vocab_size<span class="op">=</span><span class="dv">8000</span>, model_type<span class="op">=</span><span class="st">&quot;bpe&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    character_coverage<span class="op">=</span><span class="fl">1.0</span>,                 <span class="co"># 1.0 para español</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    user_defined_symbols<span class="op">=</span>[<span class="st">&quot;&lt;cls&gt;&quot;</span>, <span class="st">&quot;&lt;sep&gt;&quot;</span>] <span class="co"># tokens preservados</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>sp <span class="op">=</span> spm.SentencePieceProcessor(model_file<span class="op">=</span><span class="st">&quot;bpe_es.model&quot;</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sp.encode(<span class="st">&quot;tokenización subpalabra&quot;</span>, out_type<span class="op">=</span><span class="bu">str</span>))</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># → [&#39;▁token&#39;, &#39;ización&#39;, &#39;▁sub&#39;, &#39;palabra&#39;]</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sp.encode(<span class="st">&quot;tokenización&quot;</span>, out_type<span class="op">=</span><span class="bu">int</span>))   <span class="co"># ids</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sp.decode(sp.encode(<span class="st">&quot;Hola mundo&quot;</span>)))         <span class="co"># reconstruye exacto</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;vocab:&quot;</span>, sp.get_piece_size())</span></code></pre></div>
+<p><strong>(b) Comparar nº de tokens entre estrategias:</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>frase <span class="op">=</span> <span class="st">&quot;Las redes neuronales transformer usan atención.&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nombre <span class="kw">in</span> [<span class="st">&quot;bpe_es.model&quot;</span>, <span class="st">&quot;unigram_es.model&quot;</span>, <span class="st">&quot;word_es.model&quot;</span>]:</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    sp <span class="op">=</span> spm.SentencePieceProcessor(model_file<span class="op">=</span>nombre)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span>nombre<span class="sc">:18s}</span><span class="ss"> -&gt; </span><span class="sc">{</span><span class="bu">len</span>(sp.encode(frase))<span class="sc">}</span><span class="ss"> tokens&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># char produce ~7x más tokens que bpe-30k (ver Parte VII.B)</span></span></code></pre></div>
+<p><strong>(c) Tokenizador WordPiece de BETO (HuggingFace):</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tok <span class="op">=</span> AutoTokenizer.from_pretrained(<span class="st">&quot;dccuchile/bert-base-spanish-wwm-cased&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>enc <span class="op">=</span> tok(<span class="st">&quot;Abuela con cancer de mama a los 70 años&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>          return_offsets_mapping<span class="op">=</span><span class="va">True</span>)     <span class="co"># offsets para alinear NER</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tok.convert_ids_to_tokens(enc[<span class="st">&quot;input_ids&quot;</span>]))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># → [&#39;[CLS]&#39;,&#39;Abuela&#39;,&#39;con&#39;,&#39;cancer&#39;,&#39;de&#39;,&#39;mama&#39;,&#39;a&#39;,&#39;los&#39;,&#39;7&#39;,&#39;##0&#39;,&#39;años&#39;,&#39;[SEP]&#39;]</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(enc[<span class="st">&quot;input_ids&quot;</span>][:<span class="dv">6</span>])</span></code></pre></div>
+<div class="callout key">
+<p>WordPiece parte <code>70</code> en <code>7 ##0</code> y agrega
+<code>[CLS]</code>/<code>[SEP]</code>. En NER esto obliga a
+<strong>alinear</strong> las etiquetas con los subtokens (ver §4.5).</p>
+</div>
+<h2 id="mini-quiz-tokenización">1.11 Mini-quiz — Tokenización</h2>
+<ol type="1">
+<li>¿En qué se diferencia WordPiece de BPE en el criterio de
+fusión?</li>
+<li>¿Qué representa el prefijo <code>##</code> y qué representa
+<code>▁</code> en SentencePiece?</li>
+<li>¿Por qué los modelos modernos prefieren subpalabra sobre palabra
+completa?</li>
+<li>¿Para qué sirve <code>[CLS]</code> en BERT?</li>
+<li>¿Qué ventaja da el modelo Unigram frente a BPE durante el
+entrenamiento?</li>
+</ol>
+<p><em>(Respuestas en el banco final.)</em></p>
+<div class="page-break">
+
+</div>
+<h1 id="parte-ii-semántica-vectorial-clásica">PARTE II — Semántica
+vectorial clásica</h1>
+<h2 id="hipótesis-distribucional">2.1 Hipótesis distribucional</h2>
+<blockquote>
+<p><strong>Harris (1954), Firth (1957):</strong> <em>“You shall know a
+word by the company it keeps.”</em> El significado de una unidad
+lingüística se infiere de los contextos en los que aparece.</p>
+</blockquote>
+<p>La <strong>semántica vectorial</strong> operacionaliza esa hipótesis
+representando palabras/documentos como <strong>vectores en <span
+class="math inline">\mathbb{R}^n</span></strong>, de modo que la
+similaridad geométrica refleje similitud semántica.</p>
+<table>
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 35%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th>Generación</th>
+<th>Representante</th>
+<th>Característica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Clásica (dispersa)</strong></td>
+<td>TF, TF-IDF, PPMI, LSA</td>
+<td>Vectores largos (<span class="math inline">\lvert V\rvert</span>) y
+mayormente nulos</td>
+</tr>
+<tr>
+<td><strong>Escalada (densa)</strong></td>
+<td>Word2Vec, GloVe, FastText, BERT</td>
+<td>Vectores cortos (50–1024 dim), aprendidos</td>
+</tr>
+</tbody>
+</table>
+<h2 id="modelo-de-espacio-vectorial-vsm">2.2 Modelo de Espacio Vectorial
+(VSM)</h2>
+<p>Propuesto por <strong>Salton, Wong &amp; Yang (1975)</strong>. Tres
+ingredientes:</p>
+<ol type="1">
+<li><strong>Vocabulario</strong> <span class="math inline">V = \{t_1,
+\dots, t_m\}</span>.</li>
+<li><strong>Matriz término–documento</strong> <span
+class="math inline">X \in \mathbb{R}^{m \times n}</span> con <span
+class="math inline">X[i,j]</span> = peso del término <span
+class="math inline">t_i</span> en el documento <span
+class="math inline">d_j</span>.</li>
+<li><strong>Función de similaridad</strong> entre columnas (documentos)
+o filas (términos).</li>
+</ol>
+<h2 id="tf-idf-y-tf-idf">2.3 TF, IDF y TF-IDF</h2>
+<p><strong>Frecuencia de término (TF):</strong> <span
+class="math inline">\text{tf}(t,d)</span> = veces que <span
+class="math inline">t</span> aparece en <span
+class="math inline">d</span>.</p>
+<table>
+<colgroup>
+<col style="width: 38%" />
+<col style="width: 34%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variante</th>
+<th>Fórmula</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw</td>
+<td><span class="math inline">\text{count}</span></td>
+<td>Sesgo a documentos largos</td>
+</tr>
+<tr>
+<td>Booleana</td>
+<td><span class="math inline">1</span> si count <span
+class="math inline">&gt;0</span></td>
+<td>Pierde intensidad</td>
+</tr>
+<tr>
+<td>Log</td>
+<td><span class="math inline">1 + \log_{10}(\text{count})</span></td>
+<td>Atenúa palabras hiperfrecuentes</td>
+</tr>
+<tr>
+<td>Normalizada</td>
+<td><span
+class="math inline">\text{count}/\max_t(\text{count})</span></td>
+<td>Compara documentos de distinta longitud</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Inverse Document Frequency (IDF)</strong> — Spärck Jones
+(1972). Castiga términos que aparecen en muchos documentos (porque no
+sirven para distinguir):</p>
+<p><span class="math display"> \text{idf}(t, D) = \log\frac{N}{df(t)}
+</span></p>
+<div class="callout plain">
+<p>“¿Qué tan raro y por lo tanto qué tan informativo es este
+término?”</p>
+<ul>
+<li><span class="math inline">N</span> = número total de documentos
+(p. ej. 4 obras).</li>
+<li><span class="math inline">df(t)</span> = en cuántos documentos
+aparece el término <span class="math inline">t</span>.</li>
+<li>Divides total / en-cuántos-aparece, y le aplicas logaritmo para
+suavizar.</li>
+</ul>
+</div>
+<div class="callout example">
+<p>Con <span class="math inline">N=4</span>:</p>
+<ul>
+<li><code>good</code> aparece en las 4 obras → <span
+class="math inline">\text{idf}=\log(4/4)=\log 1=\mathbf 0</span> → “está
+en todas, no distingue nada”.</li>
+<li><code>battle</code> aparece solo en 3 → <span
+class="math inline">\text{idf}=\log(4/3)=0.12</span> → algo de
+señal.</li>
+<li>Una palabra en 1 sola obra → <span
+class="math inline">\log(4/1)=0.60</span> → señal fuerte, es una “firma”
+de ese documento.</li>
+</ul>
+</div>
+<blockquote>
+<p>La variante <strong>suavizada</strong> (la que usa sklearn) es <span
+class="math inline">\ln\frac{1+N}{1+df}+1</span>: hace lo mismo pero
+suma 1 arriba y abajo para no dividir por cero, y suma 1 al final para
+que ningún término valga 0.</p>
+</blockquote>
+<p><strong>TF-IDF</strong> = multiplicar cuántas veces aparece (TF, peso
+local) por qué tan raro es (IDF, peso global):</p>
+<p><span class="math display"> w_{t,d} = \text{tf}(t, d) \cdot
+\text{idf}(t, D) </span></p>
+<div class="callout key">
+<p>Una palabra pesa mucho en un documento solo si <strong>aparece
+bastante AQUÍ</strong> <em>y</em> <strong>es rara en el resto</strong>.
+Si aparece en todos lados (idf≈0), su peso se aplasta aunque sea muy
+frecuente.</p>
+</div>
+<h2 id="normalización-l2">2.4 Normalización L2</h2>
+<p>Antes de comparar, ponemos todos los vectores del mismo “tamaño”
+(largo 1) para que un documento largo no gane solo por ser largo:</p>
+<p><span class="math display"> \hat{\mathbf{d}} =
+\frac{\mathbf{d}}{\lVert \mathbf{d} \rVert_2}, \qquad
+   \lVert \mathbf{d} \rVert_2 = \sqrt{\textstyle\sum_i w_i^2}
+</span></p>
+<div class="callout plain">
+<p><span class="math inline">\lVert\mathbf d\rVert_2</span> es el
+<strong>largo</strong> del vector (teorema de Pitágoras en muchas
+dimensiones: raíz de la suma de los cuadrados). Dividir el vector entre
+su largo lo deja de <strong>largo 1</strong> apuntando en la misma
+dirección.</p>
+</div>
+<div class="callout example">
+<p>El vector <span class="math inline">(3,4)</span> tiene largo <span
+class="math inline">\sqrt{3^2+4^2}=\sqrt{25}=5</span>. Normalizado:
+<span class="math inline">(3/5,\,4/5)=(0.6,\,0.8)</span>, que ya mide 1.
+Tras L2 todos los documentos viven en una esfera de radio 1.</p>
+</div>
+<h2 id="similitud-coseno">2.5 Similitud coseno</h2>
+<p>Mide el <strong>ángulo</strong> entre dos vectores: si apuntan al
+mismo lado, son parecidos.</p>
+<p><span class="math display"> \cos(\mathbf{a}, \mathbf{b}) =
+\frac{\mathbf{a} \cdot \mathbf{b}}
+   {\lVert \mathbf{a} \rVert \, \lVert \mathbf{b} \rVert} </span></p>
+<figure class="figbox">
+<svg width="320" height="170" viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg">
+<line x1="40" y1="140" x2="300" y2="140" stroke="#ccc" stroke-width="1"/>
+<line x1="40" y1="20"  x2="40"  y2="140" stroke="#ccc" stroke-width="1"/>
+<defs>
+<marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+<path d="M0,0 L6,3 L0,6 Z" fill="#0a2540"/> </marker>
+<marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+<path d="M0,0 L6,3 L0,6 Z" fill="#F06105"/> </marker> </defs>
+<line x1="40" y1="140" x2="260" y2="140" stroke="#0a2540" stroke-width="3" marker-end="url(#ar)"/>
+<text x="266" y="144" font-size="13" fill="#0a2540" font-family="sans-serif">a</text>
+<line x1="40" y1="140" x2="210" y2="40" stroke="#F06105" stroke-width="3" marker-end="url(#ar2)"/>
+<text x="216" y="38" font-size="13" fill="#F06105" font-family="sans-serif">b</text>
+<path d="M 95 140 A 55 55 0 0 0 78 108" fill="none" stroke="#888" stroke-width="1.5"/>
+<text x="100" y="120" font-size="13" fill="#555" font-family="sans-serif">θ</text>
+</svg>
+<figcaption>
+El coseno mide el ángulo θ: ángulo chico → vectores parecidos (cos→1);
+ángulo recto → sin relación (cos=0).
+</figcaption>
+</figure>
+<div class="callout plain">
+<p>Arriba va el <strong>producto punto</strong> <span
+class="math inline">\mathbf a\cdot\mathbf b = \sum_i a_i b_i</span>
+(multiplicas componente a componente y sumas); abajo, el producto de los
+<strong>largos</strong>. El resultado es el coseno del ángulo, entre
+<span class="math inline">-1</span> y <span
+class="math inline">1</span>.</p>
+</div>
+<div class="callout example">
+<p><span class="math inline">\mathbf a=(1,0)</span>, <span
+class="math inline">\mathbf b=(1,1)</span>. Producto punto <span
+class="math inline">=1\cdot1+0\cdot1=1</span>. Largos: <span
+class="math inline">\lVert a\rVert=1</span>, <span
+class="math inline">\lVert b\rVert=\sqrt2=1.41</span>. Entonces <span
+class="math inline">\cos=1/(1\cdot1.41)=0.71</span> → ángulo de 45°,
+bastante parecidos.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;"><span
+class="math inline">\cos\theta</span></th>
+<th>Interpretación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><span class="math inline">1</span></td>
+<td>Misma dirección → idénticos en tema</td>
+</tr>
+<tr>
+<td style="text-align: right;"><span class="math inline">0</span></td>
+<td>En ángulo recto → nada que ver</td>
+</tr>
+<tr>
+<td style="text-align: right;"><span class="math inline">-1</span></td>
+<td>Opuestos (raro con TF-IDF, pesos <span class="math inline">\ge
+0</span>)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Truco:</strong> si ya normalizaste con L2 (largo 1), los de
+abajo valen 1 y el coseno es <strong>solo el producto punto</strong>
+<span class="math inline">\sum_i \hat a_i \hat b_i</span>. Por eso L2 +
+coseno van juntos.</p>
+</blockquote>
+<p><strong>¿Por qué coseno y no distancia normal (euclidiana)?</strong>
+La euclidiana mide cuán <em>lejos</em> están los puntos, y se deja
+engañar por el tamaño del documento (un libro vs. un párrafo). El coseno
+mira solo <strong>hacia dónde apuntan</strong> (el tema), no cuán largos
+son.</p>
+<h2 id="el-problema-de-la-palabra-dominante-caso-shakespeare">2.6 El
+“problema de la palabra dominante” (caso Shakespeare)</h2>
+<p>Cuando un término común (p. ej. <code>good</code>) tiene frecuencia
+mucho mayor que el resto, <strong>domina</strong> la norma L2 y arrastra
+el coseno hacia 1 para cualquier par de documentos:</p>
+<blockquote>
+<p>Con frecuencias crudas, <span class="math inline">\cos(\text{Henry
+V}, \text{Julius Caesar}) = 0.999</span> — no por <code>battle</code>
+(temáticamente relevante) sino por el peso bruto de
+<code>good</code>.</p>
+</blockquote>
+<p><strong>TF-IDF mitiga</strong> el efecto: multiplica
+<code>good</code> por una IDF baja y eleva el peso relativo de términos
+discriminativos como <code>battle</code>.</p>
+<h2 id="reducción-de-dimensionalidad-pca-y-t-sne">2.7 Reducción de
+dimensionalidad: PCA y t-SNE</h2>
+<p><strong>PCA</strong> (Pearson 1901): base ortogonal que maximiza la
+<strong>varianza explicada</strong>.</p>
+<ol type="1">
+<li>Centrar <span class="math inline">\tilde X = X - \mu</span>.</li>
+<li>Covarianza <span class="math inline">C = \tilde X^\top \tilde X /
+(n-1)</span>.</li>
+<li>Diagonalizar <span class="math inline">C = U\Lambda
+U^\top</span>.</li>
+<li>Proyectar <span class="math inline">Y = \tilde X \cdot U[:,
+:k]</span> (para visualizar <span class="math inline">k=2</span>).</li>
+</ol>
+<p><strong>t-SNE</strong> (van der Maaten &amp; Hinton 2008): preserva
+<strong>vecindades locales</strong> con un embedding probabilístico no
+lineal. Útil con muchos puntos; sin sentido con muy pocos (la
+perplejidad mínima supera la cardinalidad).</p>
+<table>
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 23%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>PCA</th>
+<th>t-SNE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tipo</td>
+<td>Lineal</td>
+<td>No lineal</td>
+</tr>
+<tr>
+<td>Preserva</td>
+<td>Estructura global (varianza)</td>
+<td>Vecindades locales</td>
+</tr>
+<tr>
+<td>Velocidad</td>
+<td>Rápido</td>
+<td>Lento</td>
+</tr>
+<tr>
+<td>Reproducible</td>
+<td>Sí (determinista)</td>
+<td>No (estocástico, depende de <code>seed</code>)</td>
+</tr>
+<tr>
+<td>Parámetro clave</td>
+<td><code>n_components</code></td>
+<td><code>perplexity</code> (5–50)</td>
+</tr>
+<tr>
+<td>Cuándo</td>
+<td>Pocos puntos, ver ejes</td>
+<td>Muchos puntos, ver clusters</td>
+</tr>
+</tbody>
+</table>
+<h2 id="b-métricas-de-similitud-distancia">2.7b Métricas de similitud /
+distancia</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 44%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Fórmula</th>
+<th>¿Sensible a magnitud?</th>
+<th>Uso típico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Coseno</strong></td>
+<td><span class="math inline">\frac{a\cdot b}{\lVert a\rVert\lVert
+b\rVert}</span></td>
+<td>No (solo dirección)</td>
+<td>Texto / IR / embeddings</td>
+</tr>
+<tr>
+<td><strong>Producto punto</strong></td>
+<td><span class="math inline">a\cdot b</span></td>
+<td>Sí</td>
+<td>Embeddings ya normalizados</td>
+</tr>
+<tr>
+<td><strong>Euclidiana (L2)</strong></td>
+<td><span class="math inline">\sqrt{\sum(a_i-b_i)^2}</span></td>
+<td>Sí</td>
+<td>Clustering geométrico</td>
+</tr>
+<tr>
+<td><strong>Manhattan (L1)</strong></td>
+<td><span class="math inline">\sum\lvert a_i-b_i\rvert</span></td>
+<td>Sí</td>
+<td>Robusta a outliers</td>
+</tr>
+<tr>
+<td><strong>Jaccard</strong></td>
+<td><span class="math inline">\frac{\lvert A\cap B\rvert}{\lvert A\cup
+B\rvert}</span></td>
+<td>— (conjuntos)</td>
+<td>Bag-of-words binario</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ejemplos-en-python-tf-idf-coseno-y-pca">2.8 Ejemplos en Python:
+TF-IDF, coseno y PCA</h2>
+<p><strong>(a) TF-IDF con sklearn (lo más usado):</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics.pairwise <span class="im">import</span> cosine_similarity</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> [<span class="st">&quot;el gato come pescado&quot;</span>, <span class="st">&quot;el perro come carne&quot;</span>, <span class="st">&quot;el gato y el perro juegan&quot;</span>]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> TfidfVectorizer()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> vec.fit_transform(docs)            <span class="co"># matriz dispersa (3 x |V|), ya L2-normalizada</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(vec.get_feature_names_out())</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(X.toarray().<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cosine_similarity(X[<span class="dv">0</span>], X[<span class="dv">1</span>]))   <span class="co"># similitud doc0 vs doc1</span></span></code></pre></div>
+<p><strong>(b) TF-IDF “a mano” con numpy (para entender la
+fórmula):</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># matriz término-documento (conteos): filas=términos, cols=docs</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>tf <span class="op">=</span> np.array([[<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">7</span>,<span class="dv">13</span>],[<span class="dv">114</span>,<span class="dv">80</span>,<span class="dv">62</span>,<span class="dv">89</span>],[<span class="dv">36</span>,<span class="dv">58</span>,<span class="dv">1</span>,<span class="dv">4</span>],[<span class="dv">20</span>,<span class="dv">15</span>,<span class="dv">2</span>,<span class="dv">3</span>]], <span class="bu">float</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> tf.shape[<span class="dv">1</span>]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (tf <span class="op">&gt;</span> <span class="dv">0</span>).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)                       <span class="co"># en cuántos docs aparece</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>idf <span class="op">=</span> np.log((<span class="dv">1</span><span class="op">+</span>N)<span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>df)) <span class="op">+</span> <span class="dv">1</span>                  <span class="co"># idf suavizada (sklearn)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>tfidf <span class="op">=</span> tf <span class="op">*</span> idf[:, <span class="va">None</span>]                        <span class="co"># TF * IDF</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>tfidf <span class="op">/=</span> np.linalg.norm(tfidf, axis<span class="op">=</span><span class="dv">0</span>)           <span class="co"># normalización L2 por documento</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;idf:&quot;</span>, idf.<span class="bu">round</span>(<span class="dv">3</span>))</span></code></pre></div>
+<p><strong>(c) Similitud coseno + visualización PCA 2D:</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>cos <span class="op">=</span> tfidf.T <span class="op">@</span> tfidf                  <span class="co"># tras L2, producto punto = coseno</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">2</span>).fit_transform(tfidf.T)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>plt.scatter(P[:,<span class="dv">0</span>], P[:,<span class="dv">1</span>])</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, name <span class="kw">in</span> <span class="bu">enumerate</span>([<span class="st">&quot;AYLI&quot;</span>,<span class="st">&quot;TN&quot;</span>,<span class="st">&quot;JC&quot;</span>,<span class="st">&quot;HV&quot;</span>]):</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    plt.annotate(name, P[i])</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&quot;Documentos en espacio TF-IDF (PCA 2D)&quot;</span>)<span class="op">;</span> plt.show()</span></code></pre></div>
+<h2 id="mini-quiz-semántica-clásica">2.9 Mini-quiz — Semántica
+clásica</h2>
+<ol type="1">
+<li>¿Por qué se prefiere el coseno sobre la distancia euclidiana en
+IR?</li>
+<li>¿Qué le pasa a la IDF de un término que aparece en todos los
+documentos?</li>
+<li>¿Qué corrige TF-IDF respecto a TF cruda?</li>
+<li>¿Cuándo usar PCA y cuándo t-SNE?</li>
+<li>Tras L2-norm, ¿qué relación hay entre producto punto y coseno?</li>
+</ol>
+<div class="page-break">
+
+</div>
+<h1 id="parte-iii-embeddings-densos-estáticos">PARTE III — Embeddings
+densos estáticos</h1>
+<h2 id="regresión-logística-en-pln-el-clasificador-base">3.1 Regresión
+logística en PLN (el clasificador base)</h2>
+<p>Clasificador discriminativo de referencia. Dado un vector de
+características <span class="math inline">x</span> (p. ej. el TF-IDF de
+un texto), decide la probabilidad de que sea de la clase 1 (p. ej.
+“positivo”):</p>
+<p><span class="math display"> P(y=1 \mid x) = \sigma(w^\top x + b),
+\qquad \sigma(z) = \frac{1}{1 + e^{-z}} </span></p>
+<div class="callout plain">
+<p>Por partes:</p>
+<ul>
+<li><span class="math inline">w^\top x + b = w_1x_1 + w_2x_2 + \dots +
+b</span> → una <strong>suma ponderada</strong>: cada característica
+<span class="math inline">x_i</span> se multiplica por su peso <span
+class="math inline">w_i</span> (qué tan importante es) y se suma un
+sesgo <span class="math inline">b</span>. Da un número de <span
+class="math inline">-\infty</span> a <span
+class="math inline">+\infty</span>.</li>
+<li><span class="math inline">\sigma</span> (<strong>sigmoide</strong>)
+aplasta ese número al rango <span class="math inline">[0,1]</span> para
+leerlo como <strong>probabilidad</strong>: muy negativos → ≈0, muy
+positivos → ≈1, el 0 → 0.5.</li>
+</ul>
+</div>
+<div class="callout example">
+<p>Si la suma ponderada da <span class="math inline">z=2</span>,
+entonces <span class="math inline">\sigma(2)=1/(1+e^{-2})=0.88</span> →
+88% de probabilidad de clase 1.</p>
+</div>
+<p>Se entrena ajustando los pesos <span class="math inline">w</span>
+para que se equivoque lo menos posible (minimizar la <strong>entropía
+cruzada</strong>, que penaliza predecir con confianza algo falso); el
+término <span class="math inline">\lambda\lVert w\rVert^2</span> evita
+que los pesos se disparen (regularización).</p>
+<p><strong>Multiclase = softmax:</strong> cuando hay <span
+class="math inline">K</span> clases (no solo 2), <span
+class="math inline">P(y=k\mid x) = \dfrac{e^{w_k^\top x}}{\sum_j
+e^{w_j^\top x}}</span> convierte <span class="math inline">K</span>
+puntajes en <span class="math inline">K</span> probabilidades que suman
+1 (el exponencial hace todo positivo; dividir entre la suma normaliza).
+Es la capa final de Word2Vec y de casi toda red neuronal
+clasificadora.</p>
+<h2 id="word2vec-el-cambio-de-paradigma">3.2 Word2Vec — el cambio de
+paradigma</h2>
+<p><strong>Mikolov et al. (2013).</strong> Reemplaza la matriz dispersa
+de TF-IDF por <strong>vectores densos</strong> (~100–300 dim) aprendidos
+por una red shallow que predice contextos.</p>
+<p><strong>Dos arquitecturas:</strong></p>
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 29%" />
+<col style="width: 38%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variante</th>
+<th>Predice</th>
+<th>Mejor para</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CBOW</strong></td>
+<td>la palabra dado su contexto</td>
+<td>corpora pequeños, palabras frecuentes</td>
+</tr>
+<tr>
+<td><strong>Skip-gram</strong></td>
+<td>el contexto dada la palabra</td>
+<td>corpora grandes, palabras raras</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Skip-gram</strong> recorre el texto y, por cada palabra <span
+class="math inline">w_t</span>, intenta <strong>adivinar las palabras
+vecinas</strong> (las que están a distancia <span
+class="math inline">\le c</span>, la “ventana”):</p>
+<p><span class="math display"> J(\theta) =
+-\frac{1}{T}\sum_{t=1}^{T}\sum_{-c\le j\le c,\, j\ne 0}\log
+P(w_{t+j}\mid w_t) </span></p>
+<div class="callout plain">
+<p>Para cada palabra del corpus (<span
+class="math inline">\sum_t</span>) y cada vecina dentro de la ventana
+(<span class="math inline">\sum_j</span>), maximiza la probabilidad de
+acertar esa vecina. Si dos palabras tienen vecinos parecidos, acaban con
+vectores parecidos.</p>
+</div>
+<div class="callout example">
+<p>En <code>el ___ ladra</code>, tanto <code>perro</code> como
+<code>cachorro</code> encajan → sus vectores quedan cerca.</p>
+</div>
+<p><strong>Negative Sampling</strong> (el truco que lo hace viable):
+calcular la probabilidad exacta exigiría comparar contra
+<strong>todo</strong> el vocabulario (millones de palabras) en cada
+paso. En vez de eso:</p>
+<ul>
+<li>empuja el vector de la palabra real y su vecino real a
+<strong>acercarse</strong>, y</li>
+<li>toma solo <span class="math inline">k</span> palabras al azar
+(“negativas”, que NO son vecinas) y las empuja a
+<strong>alejarse</strong>.</li>
+</ul>
+<p><span class="math display"> \log\sigma(v&#39;_{w_O}{}^\top v_{w_I}) +
+\sum_{i=1}^{k}
+   \mathbb{E}_{w_i\sim P_n(w)}\big[\log\sigma(-v&#39;_{w_i}{}^\top
+v_{w_I})\big] </span></p>
+<p>El primer término sube la similitud del par real; el segundo baja la
+de los <span class="math inline">k</span> falsos. Con <span
+class="math inline">k=5</span>–<span class="math inline">20</span>, el
+costo pasa de “revisar millones” a “revisar 20” por paso.</p>
+<p><strong>Subsampling</strong> de palabras frecuentes: palabras como
+<code>el</code>, <code>de</code>, <code>que</code> aparecen tantísimo
+que aportan poco. Se <strong>tiran al azar</strong> con probabilidad
+<span class="math inline">P_{drop}(w)=1-\sqrt{t/f(w)}</span> (<span
+class="math inline">f(w)</span> = qué tan frecuente es, <span
+class="math inline">t\approx10^{-5}</span>): cuanto más frecuente, más
+se descarta. Es el equivalente de la IDF para embeddings.</p>
+<p><strong>Propiedad emergente — analogías por aritmética con
+vectores.</strong> Como las relaciones quedan codificadas como
+<strong>direcciones</strong> en el espacio, se pueden sumar y
+restar:</p>
+<blockquote>
+<p><code>rey</code> − <code>hombre</code> + <code>mujer</code> ≈
+<code>reina</code> · <code>París</code> − <code>Francia</code> +
+<code>Italia</code> ≈ <code>Roma</code></p>
+</blockquote>
+<p>(quitas el componente “hombre” y agregas “mujer”, y caes cerca de
+“reina”).</p>
+<h2 id="word2vec-fasttext-con-gensim-el-del-taller">3.3 Word2Vec /
+FastText con Gensim (el del taller)</h2>
+<p><strong>(a) Entrenar ambos modelos:</strong></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> Word2Vec, FastText</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># sg=1 → Skip-gram ; sg=0 → CBOW</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>w2v <span class="op">=</span> Word2Vec(sentences<span class="op">=</span>corpus, vector_size<span class="op">=</span><span class="dv">300</span>, window<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>               min_count<span class="op">=</span><span class="dv">5</span>, sg<span class="op">=</span><span class="dv">1</span>, negative<span class="op">=</span><span class="dv">10</span>, sample<span class="op">=</span><span class="fl">1e-3</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>               epochs<span class="op">=</span><span class="dv">5</span>, workers<span class="op">=</span><span class="dv">4</span>, seed<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>ft  <span class="op">=</span> FastText(sentences<span class="op">=</span>corpus, vector_size<span class="op">=</span><span class="dv">300</span>, window<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>               min_count<span class="op">=</span><span class="dv">5</span>, sg<span class="op">=</span><span class="dv">1</span>, epochs<span class="op">=</span><span class="dv">5</span>, workers<span class="op">=</span><span class="dv">4</span>, seed<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>w2v.save(<span class="st">&quot;w2v.model&quot;</span>)                  <span class="co"># persistir</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># w2v = Word2Vec.load(&quot;w2v.model&quot;)     # recargar</span></span></code></pre></div>
+<p><strong>(b) Consultas semánticas:</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>w2v.wv[<span class="st">&quot;ciudad&quot;</span>]                                  <span class="co"># vector (300,)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>w2v.wv.most_similar(<span class="st">&quot;ciudad&quot;</span>, topn<span class="op">=</span><span class="dv">10</span>)            <span class="co"># vecinos por coseno</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>w2v.wv.similarity(<span class="st">&quot;rey&quot;</span>, <span class="st">&quot;reina&quot;</span>)                 <span class="co"># coseno entre 2 palabras</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>w2v.wv.doesnt_match([<span class="st">&quot;lunes&quot;</span>,<span class="st">&quot;martes&quot;</span>,<span class="st">&quot;perro&quot;</span>])   <span class="co"># → &#39;perro&#39; (el intruso)</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>w2v.wv.most_similar(positive<span class="op">=</span>[<span class="st">&quot;rey&quot;</span>,<span class="st">&quot;mujer&quot;</span>],</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                    negative<span class="op">=</span>[<span class="st">&quot;hombre&quot;</span>])           <span class="co"># analogía → &#39;reina&#39;</span></span></code></pre></div>
+<p><strong>(c) FastText resuelve OOV y morfología:</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;caminaríamos&quot;</span> <span class="kw">in</span> w2v.wv          <span class="co"># False → Word2Vec NO lo tiene</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ft.wv[<span class="st">&quot;caminaríamos&quot;</span>]             <span class="co"># FastText SÍ: lo arma con n-gramas</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>ft.wv.most_similar(<span class="st">&quot;caminaríamos&quot;</span>, topn<span class="op">=</span><span class="dv">5</span>)   <span class="co"># vecinos: caminar, caminé…</span></span></code></pre></div>
+<p><strong>(d) Vector de un documento (promedio de
+embeddings):</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> doc_vector(tokens, wv):</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    vs <span class="op">=</span> [wv[t] <span class="cf">for</span> t <span class="kw">in</span> tokens <span class="cf">if</span> t <span class="kw">in</span> wv]</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean(vs, axis<span class="op">=</span><span class="dv">0</span>) <span class="cf">if</span> vs <span class="cf">else</span> np.zeros(wv.vector_size)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>doc_vector([<span class="st">&quot;la&quot;</span>,<span class="st">&quot;ciudad&quot;</span>,<span class="st">&quot;crece&quot;</span>], w2v.wv)   <span class="co"># vector (300,) del documento</span></span></code></pre></div>
+<p><strong>(e) Cargar embeddings preentrenados (sin
+entrenar):</strong></p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gensim.downloader <span class="im">as</span> api</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>glove <span class="op">=</span> api.load(<span class="st">&quot;glove-wiki-gigaword-100&quot;</span>)   <span class="co"># 128 MB</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>glove.most_similar(<span class="st">&quot;king&quot;</span>, topn<span class="op">=</span><span class="dv">3</span>)</span></code></pre></div>
+<h2 id="glove-global-vectors">3.4 GloVe — Global Vectors</h2>
+<p><strong>Pennington, Socher &amp; Manning (2014).</strong> Combina
+conteo global (LSA) con predicción local (Word2Vec). Aprende vectores
+tal que su <strong>producto punto</strong> se parezca a cuántas veces
+dos palabras <strong>co-ocurren</strong> (aparecen juntas) en todo el
+corpus:</p>
+<p><span class="math display"> w_i^\top \tilde w_j + b_i + \tilde b_j =
+\log X_{ij} </span></p>
+<div class="callout plain">
+<p><span class="math inline">X_{ij}</span> = número de veces que las
+palabras <span class="math inline">i</span> y <span
+class="math inline">j</span> aparecen cerca en el corpus entero. GloVe
+ajusta los vectores <span class="math inline">w_i, \tilde w_j</span> (y
+unos sesgos <span class="math inline">b</span>) para que su producto
+punto reproduzca el <span class="math inline">\log</span> de ese conteo.
+Si dos palabras co-ocurren mucho → vectores alineados. Word2Vec mira
+ventana por ventana; GloVe mira la <strong>tabla global</strong> de
+co-ocurrencias de una vez.</p>
+</div>
+<table>
+<colgroup>
+<col style="width: 34%" />
+<col style="width: 38%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Word2Vec</th>
+<th>GloVe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Señal</td>
+<td>Pares locales (ventana)</td>
+<td>Estadística global (matriz co-oc)</td>
+</tr>
+<tr>
+<td>Empíricamente</td>
+<td>Mejor en analogías sintácticas</td>
+<td>Mejor en similitudes semánticas</td>
+</tr>
+</tbody>
+</table>
+<h2 id="fasttext-subpalabras-al-rescate">3.5 FastText — subpalabras al
+rescate</h2>
+<p><strong>Bojanowski et al. (2017).</strong> Representa cada palabra
+como <strong>suma de n-gramas de caracteres</strong> (<span
+class="math inline">n\in[3,6]</span>), rodeada por <code>&lt;</code> y
+<code>&gt;</code>. Ejemplo con <code>gato</code> (n-gramas de longitud
+3):</p>
+<blockquote>
+<p><code>gato</code> → <code>&lt;ga</code>, <code>gat</code>,
+<code>ato</code>, <code>to&gt;</code> + la palabra entera
+<code>&lt;gato&gt;</code></p>
+</blockquote>
+<p>El vector de la palabra es la <strong>suma</strong> de los vectores
+de sus pedacitos (n-gramas):</p>
+<p><span class="math display"> \mathbf{v}_w = \sum_{g \in \mathcal{G}_w}
+\mathbf{z}_g </span></p>
+<div class="callout plain">
+<p><span class="math inline">\mathcal{G}_w</span> = el conjunto de
+n-gramas de la palabra <span class="math inline">w</span>; <span
+class="math inline">\mathbf z_g</span> = el vector de cada pedacito
+<span class="math inline">g</span>. Sumas todos esos vectores y obtienes
+el vector de la palabra.</p>
+</div>
+<div class="callout key">
+<p><strong>Por eso maneja palabras nuevas (OOV):</strong> aunque nunca
+haya visto <code>gatito</code>, conoce <code>gat</code>,
+<code>ato</code>, etc., y arma su vector sumando esos pedacitos.</p>
+</div>
+<p><strong>Ventajas decisivas para el español:</strong></p>
+<ul>
+<li><strong>OOV:</strong> una palabra nueva se compone de sus n-gramas →
+siempre hay vector.</li>
+<li><strong>Morfología:</strong> <code>caminar</code>,
+<code>caminé</code>, <code>caminaríamos</code> comparten n-gramas →
+vectores cercanos sin haberlos visto por separado. Por eso
+<strong>FastText es el mejor de los dos</strong> para español.</li>
+</ul>
+<h2 id="tablas-comparativas-de-embeddings-densos">3.6 Tablas
+comparativas de embeddings densos</h2>
+<p><strong>CBOW vs Skip-gram (las dos arquitecturas de
+Word2Vec):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>CBOW</th>
+<th>Skip-gram</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Predice</td>
+<td>La palabra ← su contexto</td>
+<td>El contexto ← la palabra</td>
+</tr>
+<tr>
+<td>Velocidad</td>
+<td>Más rápido</td>
+<td>Más lento</td>
+</tr>
+<tr>
+<td>Palabras raras</td>
+<td>Peor</td>
+<td><strong>Mejor</strong></td>
+</tr>
+<tr>
+<td>Corpus</td>
+<td>Pequeño/mediano</td>
+<td>Grande</td>
+</tr>
+<tr>
+<td>Flag en Gensim</td>
+<td><code>sg=0</code></td>
+<td><code>sg=1</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Word2Vec vs GloVe vs FastText:</strong></p>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 27%" />
+<col style="width: 18%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr>
+<th>Criterio</th>
+<th>Word2Vec</th>
+<th>GloVe</th>
+<th>FastText</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Año / autor</td>
+<td>2013 Google</td>
+<td>2014 Stanford</td>
+<td>2017 Facebook</td>
+</tr>
+<tr>
+<td>Señal de aprendizaje</td>
+<td>Ventana local</td>
+<td>Co-ocurrencia global</td>
+<td>Ventana local + subpalabras</td>
+</tr>
+<tr>
+<td>Unidad</td>
+<td>Palabra</td>
+<td>Palabra</td>
+<td>Palabra + n-gramas</td>
+</tr>
+<tr>
+<td><strong>Maneja OOV</strong></td>
+<td>❌ No</td>
+<td>❌ No</td>
+<td>✅ Sí</td>
+</tr>
+<tr>
+<td><strong>Morfología</strong></td>
+<td>Débil</td>
+<td>Débil</td>
+<td>✅ Fuerte</td>
+</tr>
+<tr>
+<td>Memoria entrenamiento</td>
+<td>Baja</td>
+<td>Alta (matriz co-oc)</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>Fuerte en</td>
+<td>Analogías sintácticas</td>
+<td>Similitud semántica</td>
+<td>Idiomas morfológicos (español)</td>
+</tr>
+</tbody>
+</table>
+<div class="callout key">
+<p>Para <strong>español</strong>, FastText suele ganar: los sufijos
+verbales y de género/número comparten n-gramas, y nunca falla con
+palabras nuevas.</p>
+</div>
+<h2 id="mini-quiz-embeddings-densos">3.7 Mini-quiz — Embeddings
+densos</h2>
+<ol type="1">
+<li>¿Qué predice CBOW y qué predice Skip-gram?</li>
+<li>¿Qué problema resuelve el <em>negative sampling</em>?</li>
+<li>¿Por qué FastText maneja OOV y Word2Vec no?</li>
+<li>¿Qué diferencia la señal de GloVe de la de Word2Vec?</li>
+<li>Explica <code>rey - hombre + mujer ≈ reina</code>.</li>
+</ol>
+<div class="page-break">
+
+</div>
+<h1 id="parte-iv-embeddings-contextuales-y-de-oraciones">PARTE IV —
+Embeddings contextuales y de oraciones</h1>
+<h2 id="limitación-de-los-embeddings-estáticos">4.1 Limitación de los
+embeddings estáticos</h2>
+<p>Word2Vec/GloVe/FastText asignan <strong>un único vector por
+palabra</strong> independiente del contexto. Pero <code>banco</code>
+(institución) <span class="math inline">\ne</span> <code>banco</code>
+(asiento): hace falta <strong>polisemia</strong> → embeddings
+<strong>contextuales</strong>.</p>
+<table>
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 52%" />
+<col style="width: 34%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Estático (Word2Vec/GloVe/FastText)</th>
+<th>Contextual (BERT/BETO)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vectores por palabra</td>
+<td><strong>Uno fijo</strong></td>
+<td><strong>Uno por contexto</strong></td>
+</tr>
+<tr>
+<td>Polisemia (<code>banco</code>)</td>
+<td>❌ mismo vector</td>
+<td>✅ vector distinto según frase</td>
+</tr>
+<tr>
+<td>Costo</td>
+<td>Bajo (lookup en tabla)</td>
+<td>Alto (pasar por la red)</td>
+</tr>
+<tr>
+<td>Entrenamiento</td>
+<td>Ventana local</td>
+<td>Transformer + atención</td>
+</tr>
+<tr>
+<td>Ejemplo de uso</td>
+<td>Similitud de palabras</td>
+<td>Clasificación, NER, QA</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bert-y-beto">4.2 BERT (y BETO)</h2>
+<p><strong>Devlin et al. (2018).</strong> Marcó la transición a la era
+Transformer.</p>
+<table>
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arquitectura</td>
+<td>Stack de <strong>encoders</strong> Transformer (12 o 24 capas)</td>
+</tr>
+<tr>
+<td>Preentrenamiento</td>
+<td><strong>MLM</strong> (predecir tokens enmascarados) +
+<strong>NSP</strong> (¿frase siguiente?)</td>
+</tr>
+<tr>
+<td>Tokens especiales</td>
+<td><code>[CLS]</code>, <code>[SEP]</code></td>
+</tr>
+<tr>
+<td>Tokenización</td>
+<td>WordPiece</td>
+</tr>
+<tr>
+<td>Salida</td>
+<td>Embedding <strong>contextual</strong> por token (768 o 1024
+dim)</td>
+</tr>
+</tbody>
+</table>
+<p>El embedding de <code>[CLS]</code> representa la oración completa
+para clasificación. <strong>BETO</strong> es la versión española
+(<code>dccuchile/bert-base-spanish-wwm-cased</code>). Discriminativo
+(clasifica/predice), no generativo.</p>
+<p><strong>Familia BERT (variantes que conviene conocer):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Modelo</th>
+<th>Aporte clave</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BERT</strong> (2018)</td>
+<td>Encoder bidireccional, MLM + NSP</td>
+</tr>
+<tr>
+<td><strong>RoBERTa</strong> (2019)</td>
+<td>BERT mejor entrenado, sin NSP</td>
+</tr>
+<tr>
+<td><strong>DistilBERT</strong> (2019)</td>
+<td>Destilado: 40% más chico, 60% más rápido</td>
+</tr>
+<tr>
+<td><strong>ALBERT</strong> (2019)</td>
+<td>Parámetros compartidos, menor footprint</td>
+</tr>
+<tr>
+<td><strong>BETO</strong></td>
+<td>BERT entrenado en español (WordPiece, cased)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Embedding contextual con BETO en Python:</strong></p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer, AutoModel</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>tok <span class="op">=</span> AutoTokenizer.from_pretrained(<span class="st">&quot;dccuchile/bert-base-spanish-wwm-cased&quot;</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> AutoModel.from_pretrained(<span class="st">&quot;dccuchile/bert-base-spanish-wwm-cased&quot;</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>enc <span class="op">=</span> tok(<span class="st">&quot;El banco del río&quot;</span>, return_tensors<span class="op">=</span><span class="st">&quot;pt&quot;</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> model(<span class="op">**</span>enc)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>cls_vec <span class="op">=</span> out.last_hidden_state[:, <span class="dv">0</span>]      <span class="co"># embedding del token [CLS] (768,)</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cls_vec.shape)                        <span class="co"># torch.Size([1, 768])</span></span></code></pre></div>
+<h2 id="sentence-bert-sbert-y-sentence-transformers">4.3 Sentence-BERT
+(SBERT) y sentence-transformers</h2>
+<p><strong>Reimers &amp; Gurevych (2019).</strong> Red siamesa sobre
+BERT entrenada con <em>contrastive/triplet loss</em> sobre pares de
+oraciones. Produce embeddings de <strong>oración</strong> comparables
+por coseno <strong>sin</strong> pasar pares por el modelo (≈104× más
+rápido que BERT crudo en STS, <em>Semantic Textual Similarity</em>:
+medir cuán parecidas son dos frases).</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics.pairwise <span class="im">import</span> cosine_similarity</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> SentenceTransformer(<span class="st">&quot;all-MiniLM-L6-v2&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> m.encode([<span class="st">&quot;el gato duerme&quot;</span>, <span class="st">&quot;el felino descansa&quot;</span>], normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>cosine_similarity([e[<span class="dv">0</span>]], [e[<span class="dv">1</span>]])   <span class="co"># alta similitud aunque no compartan palabras</span></span></code></pre></div>
+<p><strong>Los cuatro modelos del taller:</strong></p>
+<table>
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 19%" />
+<col style="width: 30%" />
+<col style="width: 19%" />
+</colgroup>
+<thead>
+<tr>
+<th>Modelo</th>
+<th>Dim</th>
+<th>Idioma</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>all-mpnet-base-v2</code></td>
+<td>768</td>
+<td>EN (monolingüe)</td>
+<td>Alta precisión, más lento</td>
+</tr>
+<tr>
+<td><code>all-MiniLM-L6-v2</code></td>
+<td>384</td>
+<td>EN (monolingüe)</td>
+<td>Rápido y eficiente</td>
+</tr>
+<tr>
+<td><code>paraphrase-multilingual-MiniLM-L12-v2</code></td>
+<td>384</td>
+<td>multilingüe</td>
+<td>Búsqueda/similitud multilingüe</td>
+</tr>
+<tr>
+<td><code>BAAI/bge-m3</code></td>
+<td>1024</td>
+<td>multilingüe</td>
+<td>Recuperación, <strong>excelente en español</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conclusión del taller:</strong> los multilingües
+(<code>paraphrase-multilingual</code>, <code>bge-m3</code>) recuperan
+fragmentos en español mejor que los monolingües entrenados en inglés.
+<code>bge-m3</code> da el mejor balance.</p>
+<h2 id="búsqueda-semántica-y-rag-chunking-coseno">4.4 Búsqueda semántica
+y RAG (chunking + coseno)</h2>
+<p>Pipeline de recuperación semántica sobre documentos (el punto 3 del
+taller), en dos fases:</p>
+<p><strong>Indexación (una vez):</strong> PDF → texto (pymupdf4llm) →
+<em>chunking</em> → embeddings → índice de vectores.</p>
+<p><strong>Consulta (cada pregunta):</strong> texto de la consulta →
+embedding → similitud coseno contra el índice → chunk más similar.</p>
+<p><strong>Chunking</strong> con
+<code>RecursiveCharacterTextSplitter</code>
+(<code>chunk_size=1000</code>, <code>chunk_overlap=200</code>): parte el
+texto respetando límites naturales (<code>\n\n</code>, <code>\n</code>,
+<code>.</code>, <code></code>). El <em>overlap</em> evita cortar ideas a
+la mitad. Buen chunking = mejor recuperación.</p>
+<p><strong>Pipeline completo de recuperación semántica en
+Python:</strong></p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob, numpy <span class="im">as</span> np, pymupdf4llm</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_text_splitters <span class="im">import</span> RecursiveCharacterTextSplitter</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics.pairwise <span class="im">import</span> cosine_similarity</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Cargar PDFs y trocear</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>splitter <span class="op">=</span> RecursiveCharacterTextSplitter(</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    chunk_size<span class="op">=</span><span class="dv">1000</span>, chunk_overlap<span class="op">=</span><span class="dv">200</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    separators<span class="op">=</span>[<span class="st">&quot;</span><span class="ch">\n\n</span><span class="st">&quot;</span>, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="st">&quot;. &quot;</span>, <span class="st">&quot; &quot;</span>, <span class="st">&quot;&quot;</span>])</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>chunks <span class="op">=</span> []</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pdf <span class="kw">in</span> glob.glob(<span class="st">&quot;pdf-coding/*.pdf&quot;</span>):</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    texto <span class="op">=</span> pymupdf4llm.to_markdown(pdf)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    chunks <span class="op">+=</span> [c <span class="cf">for</span> c <span class="kw">in</span> splitter.split_text(texto) <span class="cf">if</span> <span class="bu">len</span>(c) <span class="op">&gt;</span> <span class="dv">30</span>]</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Indexar: un embedding por chunk (normalizado para usar coseno)</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>modelo <span class="op">=</span> SentenceTransformer(<span class="st">&quot;BAAI/bge-m3&quot;</span>)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>emb <span class="op">=</span> modelo.encode(chunks, normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Consultar: vectorizar la pregunta y buscar el chunk más similar</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> modelo.encode([<span class="st">&quot;¿objetivos del programa de maestría?&quot;</span>],</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>                  normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>sims <span class="op">=</span> cosine_similarity(q, emb)[<span class="dv">0</span>]</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>mejor <span class="op">=</span> <span class="bu">int</span>(np.argmax(sims))</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;cos=</span><span class="sc">{</span>sims[mejor]<span class="sc">:.3f}</span><span class="ch">\n</span><span class="sc">{</span>chunks[mejor][:<span class="dv">300</span>]<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p>Esto es la base de <strong>RAG</strong> (Retrieval-Augmented
+Generation): recuperar los chunks más relevantes por coseno y dárselos a
+un LLM como contexto.</p>
+<div class="callout key">
+<p>Normaliza los embeddings (<code>normalize_embeddings=True</code>) y
+el coseno se reduce a un producto punto → puedes indexar con FAISS para
+buscar en millones de chunks en milisegundos.</p>
+</div>
+<h2 id="ner-con-biobert-el-dataset-biomédico-del-taller">4.5 NER con
+BioBERT (el dataset biomédico del taller)</h2>
+<p><strong>NER</strong> (Named Entity Recognition): etiquetar cada token
+con su tipo de entidad. El dataset BioBERT tiene 29 etiquetas biomédicas
+en esquema <strong>IOB</strong>:</p>
+<ul>
+<li><code>B_XXX</code> = <strong>B</strong>eginning (inicio de entidad
+tipo XXX).</li>
+<li><code>I_XXX</code> = <strong>I</strong>nside (continuación de la
+entidad).</li>
+<li><code>O</code> = fuera de toda entidad.</li>
+</ul>
+<p>Ejemplo real (<code>train[0]</code>) — cada palabra con su
+etiqueta:</p>
+<table>
+<thead>
+<tr>
+<th>Palabra</th>
+<th>Etiqueta</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abuela</td>
+<td><code>B_FAMILY</code></td>
+<td>inicio de entidad “familiar”</td>
+</tr>
+<tr>
+<td>materna</td>
+<td><code>I_FAMILY</code></td>
+<td>continúa la entidad familiar</td>
+</tr>
+<tr>
+<td>con</td>
+<td><code>O</code></td>
+<td>fuera de entidad</td>
+</tr>
+<tr>
+<td>cancer</td>
+<td><code>B_CANCER_CONCEPT</code></td>
+<td>inicio de concepto de cáncer</td>
+</tr>
+<tr>
+<td>de mama</td>
+<td><code>I_CANCER_CONCEPT</code></td>
+<td>continúa el concepto</td>
+</tr>
+<tr>
+<td>70</td>
+<td><code>B_QUANTITY</code></td>
+<td>cantidad</td>
+</tr>
+<tr>
+<td>años</td>
+<td><code>B_METRIC</code></td>
+<td>unidad/métrica</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cargar el dataset y mostrar la anotación
+(Python):</strong></p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> load_dataset</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> load_dataset(<span class="st">&quot;json&quot;</span>, data_files<span class="op">=</span>{</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;train&quot;</span>: <span class="st">&quot;Biobert/data56/train.json&quot;</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;validation&quot;</span>: <span class="st">&quot;Biobert/data56/valid.json&quot;</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;test&quot;</span>: <span class="st">&quot;Biobert/data56/test.json&quot;</span>})</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>TAGS <span class="op">=</span> [<span class="st">&quot;B_CANCER_CONCEPT&quot;</span>,<span class="st">&quot;B_CHEMOTHERAPY&quot;</span>, ...,<span class="st">&quot;O&quot;</span>]   <span class="co"># 29 etiquetas</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>ej <span class="op">=</span> ds[<span class="st">&quot;train&quot;</span>][<span class="dv">0</span>]</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> palabra, tid <span class="kw">in</span> <span class="bu">zip</span>(ej[<span class="st">&quot;sentencia&quot;</span>], ej[<span class="st">&quot;tag&quot;</span>]):</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span>palabra<span class="sc">:12s}</span><span class="ss"> </span><span class="sc">{</span>TAGS[tid]<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p><strong>Alinear etiquetas con subtokens de WordPiece (clave en NER
+real):</strong></p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>tok <span class="op">=</span> AutoTokenizer.from_pretrained(<span class="st">&quot;dccuchile/bert-base-spanish-wwm-cased&quot;</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>enc <span class="op">=</span> tok(ej[<span class="st">&quot;sentencia&quot;</span>], is_split_into_words<span class="op">=</span><span class="va">True</span>, truncation<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> []</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> wid <span class="kw">in</span> enc.word_ids():                 <span class="co"># mapea cada subtoken a su palabra</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> wid <span class="kw">is</span> <span class="va">None</span>:        labels.append(<span class="op">-</span><span class="dv">100</span>)         <span class="co"># [CLS]/[SEP] → se ignoran</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:                  labels.append(ej[<span class="st">&quot;tag&quot;</span>][wid]) <span class="co"># subtoken hereda la etiqueta</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(<span class="bu">zip</span>(tok.convert_ids_to_tokens(enc[<span class="st">&quot;input_ids&quot;</span>]), labels)))</span></code></pre></div>
+<div class="callout warn">
+<p>Como WordPiece parte <code>70</code>→<code>7 ##0</code>, hay
+<strong>más subtokens que palabras</strong>. Se usa
+<code>word_ids()</code> para que cada subtoken herede la etiqueta de su
+palabra, y los especiales <code>[CLS]</code>/<code>[SEP]</code> se
+marcan con <code>-100</code> (PyTorch los ignora en la pérdida).</p>
+</div>
+<h2 id="mini-quiz-contextuales-y-oraciones">4.6 Mini-quiz — Contextuales
+y oraciones</h2>
+<ol type="1">
+<li>¿Por qué BERT resuelve la polisemia y Word2Vec no?</li>
+<li>¿Qué tarea de preentrenamiento usa BERT además de NSP?</li>
+<li>¿Qué ventaja tiene SBERT sobre BERT crudo para comparar
+oraciones?</li>
+<li>¿Para qué sirve el <code>chunk_overlap</code> en el chunking?</li>
+<li>En IOB, ¿qué significan <code>B_</code>, <code>I_</code> y
+<code>O</code>?</li>
+</ol>
+<div class="page-break">
+
+</div>
+<h1 id="parte-v-tabla-maestra-de-representaciones">PARTE V — Tabla
+maestra de representaciones</h1>
+<p>Resumen de <strong>todas</strong> las formas de representar texto
+vistas en el curso, de la más simple a la más potente:</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 9%" />
+<col style="width: 18%" />
+<col style="width: 7%" />
+<col style="width: 15%" />
+<col style="width: 13%" />
+<col style="width: 10%" />
+</colgroup>
+<thead>
+<tr>
+<th>Representación</th>
+<th>Tipo</th>
+<th style="text-align: right;">Dim típica</th>
+<th>OOV</th>
+<th>Contexto</th>
+<th>Captura</th>
+<th>Costo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>One-hot</strong></td>
+<td>Dispersa</td>
+<td style="text-align: right;"><span class="math inline">\lvert
+V\rvert</span></td>
+<td>❌</td>
+<td>❌</td>
+<td>Identidad de palabra</td>
+<td>Mínimo</td>
+</tr>
+<tr>
+<td><strong>TF-IDF</strong></td>
+<td>Dispersa</td>
+<td style="text-align: right;"><span class="math inline">\lvert
+V\rvert</span></td>
+<td>❌</td>
+<td>❌</td>
+<td>Relevancia en documento</td>
+<td>Bajo</td>
+</tr>
+<tr>
+<td><strong>Word2Vec</strong></td>
+<td>Densa estática</td>
+<td style="text-align: right;">100–300</td>
+<td>❌</td>
+<td>❌</td>
+<td>Semántica por co-ocurrencia</td>
+<td>Medio</td>
+</tr>
+<tr>
+<td><strong>GloVe</strong></td>
+<td>Densa estática</td>
+<td style="text-align: right;">100–300</td>
+<td>❌</td>
+<td>❌</td>
+<td>Co-ocurrencia global</td>
+<td>Medio</td>
+</tr>
+<tr>
+<td><strong>FastText</strong></td>
+<td>Densa estática</td>
+<td style="text-align: right;">100–300</td>
+<td>✅</td>
+<td>❌</td>
+<td>Semántica + morfología</td>
+<td>Medio</td>
+</tr>
+<tr>
+<td><strong>BERT/BETO</strong></td>
+<td>Densa contextual</td>
+<td style="text-align: right;">768–1024</td>
+<td>✅ (WordPiece)</td>
+<td>✅</td>
+<td>Polisemia, sintaxis</td>
+<td>Alto</td>
+</tr>
+<tr>
+<td><strong>SBERT/bge-m3</strong></td>
+<td>Densa de oración</td>
+<td style="text-align: right;">384–1024</td>
+<td>✅</td>
+<td>✅</td>
+<td>Significado de frase</td>
+<td>Alto</td>
+</tr>
+</tbody>
+</table>
+<div class="callout key">
+<p>Regla mental: <strong>dispersa</strong> (TF-IDF) = cuenta palabras;
+<strong>densa estática</strong> (Word2Vec/FastText) = una foto fija del
+significado; <strong>contextual</strong> (BERT) = el significado según
+la frase; <strong>de oración</strong> (SBERT) = comparar frases enteras
+por coseno.</p>
+</div>
+<div class="page-break">
+
+</div>
+<h1 id="parte-vi-formulario-de-bolsillo-cheat-sheet">PARTE VI —
+Formulario de bolsillo (cheat sheet)</h1>
+<table>
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 21%" />
+<col style="width: 53%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concepto</th>
+<th>Fórmula</th>
+<th>Qué dice (en simple)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IDF (clásica)</td>
+<td><span class="math inline">\log(N/df)</span></td>
+<td>Qué tan rara/informativa es una palabra</td>
+</tr>
+<tr>
+<td>IDF (suavizada)</td>
+<td><span class="math inline">\ln\frac{1+N}{1+df}+1</span></td>
+<td>Igual, sin dividir por cero</td>
+</tr>
+<tr>
+<td>TF-IDF</td>
+<td><span class="math inline">\text{tf}\cdot\text{idf}</span></td>
+<td>Frecuente aquí <strong>y</strong> rara en el resto</td>
+</tr>
+<tr>
+<td>Norma L2</td>
+<td><span class="math inline">\sqrt{\sum w_i^2}</span></td>
+<td>El “largo” del vector</td>
+</tr>
+<tr>
+<td>Coseno</td>
+<td><span class="math inline">\frac{a\cdot b}{\lVert a\rVert\lVert
+b\rVert}</span></td>
+<td>El ángulo: ¿apuntan al mismo lado?</td>
+</tr>
+<tr>
+<td>L2 ⇒ coseno</td>
+<td><span class="math inline">\lVert a-b\rVert^2=2-2\cos</span></td>
+<td>Tras L2, distancia y coseno son lo mismo</td>
+</tr>
+<tr>
+<td>Sigmoide</td>
+<td><span class="math inline">\frac{1}{1+e^{-z}}</span></td>
+<td>Aplasta un número a probabilidad <span
+class="math inline">[0,1]</span></td>
+</tr>
+<tr>
+<td>Softmax</td>
+<td><span class="math inline">\frac{e^{z_k}}{\sum_j e^{z_j}}</span></td>
+<td><span class="math inline">K</span> puntajes → <span
+class="math inline">K</span> probabilidades que suman 1</td>
+</tr>
+<tr>
+<td>WordPiece</td>
+<td><span class="math inline">\frac{P(AB)}{P(A)P(B)}</span></td>
+<td>¿Vale la pena pegar estas 2 piezas?</td>
+</tr>
+<tr>
+<td>FastText</td>
+<td><span class="math inline">v_w=\sum_g z_g</span></td>
+<td>Palabra = suma de sus pedacitos</td>
+</tr>
+<tr>
+<td>Subsampling</td>
+<td><span class="math inline">1-\sqrt{t/f(w)}</span></td>
+<td>Tira palabras demasiado frecuentes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Decisiones rápidas (¿qué uso?):</strong></p>
+<table>
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 71%" />
+</colgroup>
+<thead>
+<tr>
+<th>Caso</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline, pocas oraciones, vocab fijo</td>
+<td>TF-IDF + coseno</td>
+</tr>
+<tr>
+<td>Similitud de palabras, idioma morfológico</td>
+<td>FastText</td>
+</tr>
+<tr>
+<td>Manejar OOV</td>
+<td>FastText</td>
+</tr>
+<tr>
+<td>Polisemia / contexto</td>
+<td>BERT / BETO</td>
+</tr>
+<tr>
+<td>Comparar oraciones, búsqueda semántica, RAG</td>
+<td>SBERT / bge-m3 + coseno</td>
+</tr>
+<tr>
+<td>Clasificación SOTA con recursos</td>
+<td>Fine-tune BERT/RoBERTa</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break">
+
+</div>
+<h1 id="parte-vii-banco-de-preguntas-con-respuestas">PARTE VII — Banco
+de preguntas con respuestas</h1>
+<p><strong>Tokenización</strong></p>
+<ol type="1">
+<li><strong>WordPiece vs BPE:</strong> BPE fusiona el par <em>más
+frecuente</em>; WordPiece el que <em>maximiza la verosimilitud</em>
+<span class="math inline">P(AB)/(P(A)P(B))</span>.</li>
+<li><strong><code>##</code> y <code>▁</code>:</strong> <code>##</code>
+marca subpalabra interna en WordPiece (<code>##ization</code>);
+<code>▁</code> marca inicio de palabra (espacio) en SentencePiece.</li>
+<li><strong>Subpalabra &gt; palabra:</strong> evita vocabularios enormes
+y el problema OOV manteniendo secuencias cortas.</li>
+<li><strong><code>[CLS]</code>:</strong> token inicial cuyo embedding
+agregado se usa como representación de la secuencia para
+clasificación.</li>
+<li><strong>Unigram:</strong> puede muestrear segmentaciones
+alternativas → regularización / <em>data augmentation</em>.</li>
+</ol>
+<p><strong>Semántica clásica</strong></p>
+<ol start="6" type="1">
+<li><strong>Coseno vs euclidiana:</strong> el coseno mide dirección
+(robusto a la longitud del documento); la euclidiana se sesga con la
+magnitud.</li>
+<li><strong>IDF de término ubicuo:</strong> <span
+class="math inline">\approx 0</span> (clásica) o <span
+class="math inline">1</span> (suavizada) → poca señal
+discriminativa.</li>
+<li><strong>TF-IDF corrige:</strong> el sesgo de palabras frecuentes
+poco informativas (problema de la palabra dominante).</li>
+<li><strong>PCA vs t-SNE:</strong> PCA =
+lineal/global/rápido/reproducible; t-SNE = no
+lineal/local/lento/estocástico, para muchos puntos.</li>
+<li><strong>L2 ⇒</strong> producto punto = coseno (todos los vectores en
+la esfera unitaria).</li>
+</ol>
+<p><strong>Embeddings densos</strong></p>
+<ol start="11" type="1">
+<li><strong>CBOW/Skip-gram:</strong> CBOW predice la palabra desde el
+contexto; Skip-gram predice el contexto desde la palabra.</li>
+<li><strong>Negative sampling:</strong> evita el softmax sobre todo el
+vocabulario muestreando <span class="math inline">k</span> negativos →
+<span class="math inline">O(\lvert V\rvert)\to O(k)</span>.</li>
+<li><strong>FastText OOV:</strong> compone la palabra desde n-gramas de
+caracteres, así que siempre produce vector; Word2Vec asigna un vector
+único por palabra completa.</li>
+<li><strong>GloVe vs W2V:</strong> GloVe usa estadística global de
+co-ocurrencia; Word2Vec usa pares locales de ventana.</li>
+<li><strong>Analogía:</strong> las relaciones semánticas son
+<strong>direcciones lineales</strong> en el espacio, así
+<code>rey-hombre+mujer</code> cae cerca de <code>reina</code>.</li>
+</ol>
+<p><strong>Contextuales y oraciones</strong></p>
+<ol start="16" type="1">
+<li><strong>BERT y polisemia:</strong> genera un vector <strong>por
+contexto</strong>, así <code>banco</code> tiene representación distinta
+según la oración.</li>
+<li><strong>Preentrenamiento BERT:</strong> MLM (predecir tokens
+enmascarados) + NSP (frase siguiente).</li>
+<li><strong>SBERT:</strong> produce embeddings de oración comparables
+por coseno sin reprocesar pares → órdenes de magnitud más rápido para
+búsqueda/STS.</li>
+<li><strong><code>chunk_overlap</code>:</strong> solapa fragmentos para
+no cortar una idea a la mitad y preservar contexto en la frontera.</li>
+<li><strong>IOB:</strong> <code>B_</code> inicio de entidad,
+<code>I_</code> continuación, <code>O</code> fuera de entidad.</li>
+</ol>
+<div class="page-break">
+
+</div>
+<h1 id="parte-viii-ejemplos-resueltos-material-de-quiz">PARTE VIII —
+Ejemplos resueltos (material de quiz)</h1>
+<h2 id="vii.a-caso-shakespeare-tf-idf-coseno-paso-a-paso">VII.A Caso
+Shakespeare: TF-IDF + coseno paso a paso</h2>
+<p>Corpus clásico de Jurafsky &amp; Martin (Fig. 6.2). Obras:
+<strong>AYLI</strong> = <em>As You Like It</em>, <strong>TN</strong> =
+<em>Twelfth Night</em>, <strong>JC</strong> = <em>Julius Caesar</em>,
+<strong>HV</strong> = <em>Henry V</em>. Matriz término–documento
+(conteos):</p>
+<table>
+<thead>
+<tr>
+<th>término</th>
+<th style="text-align: right;">AYLI</th>
+<th style="text-align: right;">TN</th>
+<th style="text-align: right;">JC</th>
+<th style="text-align: right;">HV</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>battle</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>good</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">89</td>
+</tr>
+<tr>
+<td>fool</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>wit</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Paso 1 — df e idf</strong> (4 documentos, <span
+class="math inline">N=4</span>):</p>
+<table>
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 19%" />
+<col style="width: 19%" />
+<col style="width: 19%" />
+</colgroup>
+<thead>
+<tr>
+<th>Término</th>
+<th style="text-align: right;">df</th>
+<th style="text-align: right;">idf clásica <span
+class="math inline">\log_{10}(N/df)</span></th>
+<th style="text-align: right;">idf suavizada <span
+class="math inline">\ln\frac{1+N}{1+df}+1</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>battle</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.1249</td>
+<td style="text-align: right;"><strong>1.2231</strong></td>
+</tr>
+<tr>
+<td>good</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+<tr>
+<td>fool</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+<tr>
+<td>wit</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+</tbody>
+</table>
+<p>Solo <code>battle</code> (df=3 &lt; N) tiene idf &gt; 1; los términos
+ubicuos quedan en idf=1. <strong>Por eso <code>battle</code> es el único
+cuyo peso cambia entre raw y TF-IDF.</strong></p>
+<p><strong>Paso 2 — coseno con TF-IDF</strong> (matriz de similitud
+entre obras):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">AYLI</th>
+<th style="text-align: right;">TN</th>
+<th style="text-align: right;">JC</th>
+<th style="text-align: right;">HV</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AYLI</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.950</td>
+<td style="text-align: right;">0.942</td>
+<td style="text-align: right;">0.945</td>
+</tr>
+<tr>
+<td>TN</td>
+<td style="text-align: right;">0.950</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.807</td>
+<td style="text-align: right;">0.817</td>
+</tr>
+<tr>
+<td>JC</td>
+<td style="text-align: right;">0.942</td>
+<td style="text-align: right;">0.807</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;"><strong>0.9988</strong></td>
+</tr>
+<tr>
+<td>HV</td>
+<td style="text-align: right;">0.945</td>
+<td style="text-align: right;">0.817</td>
+<td style="text-align: right;"><strong>0.9988</strong></td>
+<td style="text-align: right;">1.000</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Paso 3 — coseno con frecuencias crudas:</strong> <span
+class="math inline">\cos(\text{HV},\text{JC}) = \mathbf{0.9991}</span>
+(el famoso ≈0.999 del enunciado).</p>
+<p><strong>Respuestas del quiz:</strong></p>
+<ul>
+<li><strong>Obra más similar a <code>Henry V</code>:</strong>
+<code>Julius Caesar</code> (0.9988 con TF-IDF; 0.9991 raw). El orden
+<code>JC &gt; AYLI &gt; TN</code> <strong>no cambia</strong> entre raw y
+TF-IDF.</li>
+<li><strong>¿Por qué HV ≈ JC = 0.999 en crudo?</strong> Porque
+<code>good</code> (89 y 62) <strong>domina la norma L2</strong> de ambos
+vectores: la proporción <span class="math inline">good/\lVert d\rVert
+\approx 0.99</span>, así que los vectores quedan casi paralelos al eje
+<code>good</code> y el coseno colapsa: <span
+class="math inline">\cos(a,b)\approx \frac{a_2 b_2}{\lvert
+a_2\rvert\lvert
+b_2\rvert}=1</span>, insensible al resto.</li>
+<li><strong>¿Qué corrige TF-IDF?</strong> Penaliza términos de alto df
+(ubicuos, poca señal) y premia los de bajo df (firmas del documento).
+Aquí casi no cambia el ranking porque 3 de 4 términos están en
+<em>todos</em> los documentos (idf=1); con un corpus más diverso sí
+reordenaría. <strong>TF-IDF re-pesa, no es bala de plata.</strong></li>
+<li><strong>PCA 2D:</strong> sobre las columnas (documentos), varianza
+explicada <strong>PC1 ≈ 96.4 %</strong>, PC2 ≈ 3.4 % (acumulado ≈ 99.8
+%).</li>
+</ul>
+<h2
+id="vii.b-comparación-de-tokenizadores-13-modelos-sobre-spanish-billion-words">VII.B
+Comparación de tokenizadores (13 modelos sobre Spanish Billion
+Words)</h2>
+<p>Tokens producidos por 5 sentencias de prueba, por algoritmo × tamaño
+de vocabulario:</p>
+<table>
+<thead>
+<tr>
+<th>Modelo</th>
+<th style="text-align: right;">TOTAL tokens (5 sent.)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bpe-10000 / wp-10000</td>
+<td style="text-align: right;">66</td>
+</tr>
+<tr>
+<td>bpe-20000 / wp-20000</td>
+<td style="text-align: right;">55</td>
+</tr>
+<tr>
+<td>bpe-30000 / wp-30000</td>
+<td style="text-align: right;"><strong>50</strong></td>
+</tr>
+<tr>
+<td>word-10000</td>
+<td style="text-align: right;">55</td>
+</tr>
+<tr>
+<td>word-20000 / 30000</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>char-10000/20000/30000</td>
+<td style="text-align: right;"><strong>409</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lecturas clave (típicas de quiz):</strong></p>
+<ul>
+<li><strong><code>char</code> produce ~7× más tokens</strong> que
+<code>bpe-30000</code> → costo de atención <span
+class="math inline">O(n^2)</span> inviable para inputs largos.</li>
+<li><strong>Subir vocab 10k→30k</strong> reduce ~25 % los tokens en
+BPE/WordPiece; en <code>word</code> la ganancia se aplana (la cola
+frecuente ya está cubierta); en <code>char</code> <strong>no aporta
+nada</strong> (alfabeto cubierto con &lt;200 entradas → conteo de tokens
+no varía con vocab_size).</li>
+<li><strong>BPE y WordPiece con el mismo vocab dan conteos casi
+idénticos</strong> (comparten algoritmo base); la diferencia es la
+presencia de <code>&lt;sep&gt;</code>/<code>&lt;cls&gt;</code> en el
+inventario.</li>
+<li><strong><code>word</code></strong> empata a BPE en compresión sobre
+dominio cubierto, pero degrada con OOV (→
+<code>&lt;unk&gt;</code>).</li>
+</ul>
+<p><strong>Símbolos especiales en SentencePiece</strong>
+(<code>user_defined_symbols</code>): <code>&lt;cls&gt;</code> y
+<code>&lt;sep&gt;</code> reciben un ID dedicado y se preservan como
+unidad al tokenizar (<code>sp.piece_to_id('&lt;cls&gt;')</code> → ID
+fijo).</p>
+<p><strong>Trade-off práctico:</strong> LLM multilingüe grande →
+BPE/Unigram vocab 32k–256k · BERT mono-idioma → WordPiece 30k ·
+transcripción/fonética → char · baseline con vocab cerrado → word
+20k.</p>
+<div class="page-break">
+
+</div>
+<h1 id="referencias">Referencias</h1>
+<ul>
+<li>Jurafsky &amp; Martin (2024). <em>Speech and Language
+Processing</em> (3.ª ed., draft), caps. 5, 6, 11.</li>
+<li>Sennrich et al. (2016) BPE · Schuster &amp; Nakajima (2012)
+WordPiece · Kudo (2018) Unigram/SentencePiece.</li>
+<li>Salton et al. (1975) VSM · Spärck Jones (1972) IDF · Salton &amp;
+Buckley (1988) term weighting.</li>
+<li>Mikolov et al. (2013) Word2Vec · Pennington et al. (2014) GloVe ·
+Bojanowski et al. (2017) FastText.</li>
+<li>Devlin et al. (2018) BERT · Reimers &amp; Gurevych (2019)
+Sentence-BERT.</li>
+</ul>
+</body>
+</html>

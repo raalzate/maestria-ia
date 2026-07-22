@@ -1,0 +1,369 @@
+/* ============================================================
+   Mobile-friendly variant — Guía PLN
+   Página angosta (estilo teléfono), tipografía mayor, sin justificación,
+   código con wrap. Diseñado para leerse en pantalla de móvil sin zoom.
+   ============================================================ */
+
+@page {
+  size: 100mm 170mm;       /* phone-friendly aspect ~5:8.5 */
+  margin: 7mm 7mm 9mm 7mm;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.5;
+  color: #1a1a1a;
+  text-align: left;        /* no justify on narrow column */
+  hyphens: manual;
+  -webkit-hyphens: manual;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ---------- Cover ---------- */
+header#title-block-header {
+  page-break-after: always;
+  text-align: center;
+  padding-top: 30mm;
+}
+
+header#title-block-header h1.title {
+  font-size: 18pt;
+  font-weight: 700;
+  color: #0a2540;
+  line-height: 1.2;
+  margin: 0 0 8mm 0;
+  border: none;
+  page-break-before: avoid;
+}
+
+header#title-block-header p.subtitle {
+  font-size: 11pt;
+  font-style: italic;
+  color: #555;
+  margin: 0 0 14mm 0;
+  line-height: 1.35;
+}
+
+header#title-block-header p.author {
+  font-size: 10.5pt;
+  color: #2c3e50;
+  margin: 6mm 0 2mm 0;
+}
+
+header#title-block-header p.date {
+  font-size: 9.5pt;
+  color: #888;
+  margin: 0;
+}
+
+/* ---------- TOC ---------- */
+nav#TOC {
+  page-break-after: always;
+  page-break-before: always;
+}
+
+nav#TOC h1, nav#TOC > h2 {
+  page-break-before: avoid;
+  font-size: 15pt;
+  color: #0a2540;
+  border-bottom: 2px solid #F06105;
+  padding-bottom: 3pt;
+  margin-bottom: 10pt;
+}
+
+nav#TOC > h2:first-child::before,
+nav#TOC > h1:first-child::before { content: "Tabla de contenidos"; }
+
+nav#TOC ul { list-style: none; padding-left: 0; margin: 0; }
+nav#TOC > ul > li {
+  font-size: 10pt;
+  font-weight: 600;
+  color: #0a2540;
+  margin-top: 5pt;
+}
+nav#TOC ul ul { padding-left: 10pt; margin: 2pt 0; }
+nav#TOC ul ul > li {
+  font-weight: 400;
+  font-size: 9pt;
+  color: #444;
+}
+nav#TOC ul ul ul > li { font-size: 8.5pt; color: #666; }
+nav#TOC a { text-decoration: none; color: inherit; border: none; }
+
+/* ---------- Headings ---------- */
+h1 {
+  font-size: 16pt;
+  font-weight: 700;
+  color: #0a2540;
+  border-bottom: 2px solid #F06105;
+  padding-bottom: 4pt;
+  margin: 18pt 0 10pt 0;
+  page-break-before: always;
+  page-break-after: avoid;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 13pt;
+  font-weight: 600;
+  color: #0a2540;
+  margin: 16pt 0 7pt 0;
+  border-left: 4px solid #F06105;
+  padding-left: 8pt;
+  page-break-after: avoid;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 11.5pt;
+  font-weight: 600;
+  color: #234060;
+  margin: 14pt 0 6pt 0;
+  page-break-after: avoid;
+}
+
+h4 {
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: #34495e;
+  font-style: italic;
+  margin: 10pt 0 4pt 0;
+  page-break-after: avoid;
+}
+
+.unnumbered { border-bottom: none; }
+
+/* ---------- Body ---------- */
+p {
+  margin: 5pt 0;
+  orphans: 2;
+  widows: 2;
+}
+
+strong { color: #0a2540; font-weight: 700; }
+em { color: #2c3e50; }
+a {
+  color: #0a4d80;
+  text-decoration: none;
+  border-bottom: 1px dotted #aaa;
+  word-break: break-word;
+}
+
+/* ---------- Code ---------- */
+code {
+  font-family: "JetBrains Mono", "Menlo", "Consolas", monospace;
+  font-size: 8.5pt;
+  background: #f4f6f8;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: #b8336a;
+  border: 1px solid #e6e9ee;
+  word-break: break-word;
+}
+
+pre {
+  background: #f8f9fb;
+  border: 1px solid #e1e4e8;
+  border-left: 3px solid #F06105;
+  padding: 8pt 10pt;
+  margin: 10pt 0;
+  font-family: "JetBrains Mono", "Menlo", "Consolas", monospace;
+  font-size: 7.5pt;
+  line-height: 1.35;
+  page-break-inside: avoid;
+  border-radius: 3px;
+  color: #1a1a1a;
+  white-space: pre-wrap;        /* wrap long lines on narrow page */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre:not([class]),
+pre.unknown,
+div.sourceCode { background: #fbfcfd; }
+
+/* ---------- Blockquotes ---------- */
+blockquote {
+  border-left: 3px solid #6c8aa6;
+  background: #f4f8fc;
+  margin: 10pt 0;
+  padding: 7pt 10pt;
+  color: #2c3e50;
+  font-style: italic;
+  border-radius: 0 3px 3px 0;
+  page-break-inside: avoid;
+  font-size: 10pt;
+}
+blockquote p { margin: 3pt 0; }
+
+/* ---------- Tables — modo "card" para no romper en móvil ---------- */
+table {
+  border-collapse: collapse;
+  margin: 12pt 0;
+  font-size: 8.5pt;
+  width: 100%;
+  page-break-inside: avoid;
+  font-family: "Source Sans Pro", "Helvetica Neue", sans-serif;
+  table-layout: fixed;
+  word-break: break-word;
+}
+
+thead { background: #0a2540; }
+
+th {
+  background: #0a2540;
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 5pt 6pt;
+  border: none;
+  font-size: 8.5pt;
+}
+
+td {
+  padding: 5pt 6pt;
+  border: 1px solid #e1e4e8;
+  border-left: none;
+  border-right: none;
+  vertical-align: top;
+  font-size: 8.5pt;
+  color: #1a1a1a;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+tr:nth-child(even) td { background: #f7f9fb; }
+td code { font-size: 7.8pt; }
+
+td[align="right"]  { text-align: right; font-variant-numeric: tabular-nums; }
+td[align="center"] { text-align: center; }
+td[align="left"]   { text-align: left; }
+th[align="right"]  { text-align: right; }
+th[align="center"] { text-align: center; }
+
+/* ---------- Lists ---------- */
+ul, ol {
+  margin: 6pt 0 6pt 12pt;
+  padding-left: 6pt;
+}
+li { margin: 2pt 0; }
+ul li::marker { color: #F06105; }
+ol li::marker { color: #F06105; font-weight: 600; }
+
+/* ---------- Page break ---------- */
+.page-break { page-break-after: always; height: 0; display: block; }
+
+/* ---------- KaTeX — escala y permite scroll horizontal sólo en math display ---------- */
+.katex { font-size: 0.95em !important; }
+
+.katex-display {
+  margin: 10pt 0 !important;
+  padding: 4pt 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex-display > .katex { font-size: 1em !important; }
+
+/* ---------- Figures ---------- */
+.figure {
+  margin: 12pt 0;
+  padding: 8pt 6pt 4pt 6pt;
+  background: #fbfcfd;
+  border: 1px solid #e1e4e8;
+  border-radius: 4px;
+  page-break-inside: avoid;
+  text-align: center;
+}
+
+.figure svg,
+.figure img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.figure .caption,
+.figure p.caption {
+  font-size: 8pt;
+  color: #5c6f80;
+  font-style: italic;
+  text-align: center;
+  margin: 6pt 2pt 0 2pt;
+  line-height: 1.35;
+}
+
+/* ---------- HR ---------- */
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 14pt 0;
+}
+
+@media print {
+  pre, blockquote, table { page-break-inside: avoid; }
+  h1, h2, h3, h4 { page-break-after: avoid; }
+  img { max-width: 100%; height: auto; }
+}
+
+/* ---------- Componentes gráficos (mobile) ---------- */
+.pipeline { margin: 10pt 0; }
+.stage {
+  display: flex; gap: 7pt; background: #fff;
+  border: 1px solid #e1e4e8; border-left: 5px solid #0a2540;
+  border-radius: 7px; padding: 7pt 9pt; margin: 0 0 5pt 0;
+  page-break-inside: avoid;
+}
+.stage .stnum {
+  flex: 0 0 22px; height: 22px; width: 22px; background: #0a2540; color: #fff;
+  border-radius: 50%; font-weight: 700; font-size: 10pt;
+  display: flex; align-items: center; justify-content: center; align-self: center;
+}
+.stage .sttitle { font-weight: 700; font-size: 10.5pt; color: #0a2540; }
+.stage .stq { font-style: italic; color: #5a6b7b; font-size: 8.5pt; margin: 1pt 0 3pt; }
+.stage .stex { font-size: 8.5pt; margin-top: 3pt; }
+.stage .pills span {
+  display: inline-block; background: #eef2f7; color: #234; border: 1px solid #d6dee7;
+  border-radius: 9px; padding: 0 6pt; margin: 1pt 2pt 1pt 0; font-size: 7.5pt;
+}
+.stage.s1 { border-left-color: #F06105; } .stage.s1 .stnum { background: #F06105; }
+.stage.s2 { border-left-color: #d98324; } .stage.s2 .stnum { background: #d98324; }
+.stage.s3 { border-left-color: #2e8b57; } .stage.s3 .stnum { background: #2e8b57; }
+.stage.s4 { border-left-color: #2f6db0; } .stage.s4 .stnum { background: #2f6db0; }
+.stage.s5 { border-left-color: #6a4ca5; } .stage.s5 .stnum { background: #6a4ca5; }
+
+.callout { border-radius: 0 5px 5px 0; padding: 7pt 9pt; margin: 8pt 0; font-size: 9.5pt; page-break-inside: avoid; }
+.callout > :first-child { margin-top: 0; } .callout > :last-child { margin-bottom: 0; }
+.callout::before { font-weight: 700; font-size: 8pt; display: block; margin-bottom: 2pt; text-transform: uppercase; }
+.callout.plain   { background: #f4f8fc; border-left: 4px solid #6c8aa6; }
+.callout.plain::before   { content: "🟦  En palabras"; color: #2f6db0; }
+.callout.example { background: #f3faf5; border-left: 4px solid #2e8b57; }
+.callout.example::before { content: "✏️  Ejemplo"; color: #2e8b57; }
+.callout.key     { background: #fff7ef; border-left: 4px solid #F06105; }
+.callout.key::before     { content: "💡  Idea clave"; color: #d35400; }
+.callout.warn    { background: #fdf3f3; border-left: 4px solid #c0392b; }
+.callout.warn::before    { content: "⚠️  Ojo"; color: #c0392b; }
+
+.cardgrid { display: flex; flex-direction: column; gap: 6pt; margin: 8pt 0; }
+.card { background: #fff; border: 1px solid #e1e4e8; border-top: 3px solid #0a2540; border-radius: 6px; padding: 7pt 9pt; page-break-inside: avoid; }
+.card .ct { font-weight: 700; color: #0a2540; font-size: 9.5pt; }
+.card .cd { font-size: 8.5pt; color: #333; }
+
+.figbox { text-align: center; margin: 10pt 0; padding: 6pt; background: #fbfcfd; border: 1px solid #e8ebee; border-radius: 7px; page-break-inside: avoid; }
+.figbox svg { max-width: 100%; height: auto; }
+.figbox figcaption { font-size: 8pt; color: #5a6b7b; margin-top: 3pt; font-style: italic; }

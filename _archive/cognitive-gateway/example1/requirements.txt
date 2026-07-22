@@ -1,0 +1,5 @@
+# --- Núcleo de LangChain y LangGraph ---
+langchain>=0.2.12
+langgraph>=0.0.41
+langchain-core>=0.2.26
+langchain-openai>=0.1.8

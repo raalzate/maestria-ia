@@ -1,0 +1,28 @@
+# Core
+torch>=2.2
+torchvision
+torchaudio
+
+# Hugging Face stack
+transformers>=4.41
+datasets>=2.19
+evaluate>=0.4.2
+sacrebleu>=2.4
+accelerate>=0.30
+sentencepiece>=0.2
+tokenizers>=0.19
+
+# PEFT / LoRA
+peft>=0.11
+
+# EDA + viz
+pandas>=2.2
+numpy>=1.26
+matplotlib>=3.8
+seaborn>=0.13
+tqdm
+
+# Notebook
+jupyter
+ipykernel
+ipywidgets

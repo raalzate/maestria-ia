@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>English Interpreter</title>
+    <style>
+        :root {
+            --bg-color: #1a1b26;
+            --card-bg: #24283b;
+            --text-color: #a9b1d6;
+            --highlight-color: #7aa2f7;
+            --active-bg: #3d59a1;
+            --active-text: #ffffff;
+            --accent: #bb9af7;
+            --subtitle: #7dcfff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            color: var(--text-color);
+        }
+
+        .container {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        audio {
+            width: 100%;
+            height: 40px;
+            border-radius: 20px;
+            outline: none;
+            filter: invert(0.9) hue-rotate(180deg);
+        }
+
+        .text-box {
+            flex: 1;
+            overflow-y: auto;
+            font-size: 16px;
+            line-height: 2.0;
+            color: var(--text-color);
+            padding-right: 12px;
+            white-space: pre-wrap;
+            scrollbar-width: thin;
+            scrollbar-color: var(--active-bg) transparent;
+        }
+
+        .text-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .text-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .text-box::-webkit-scrollbar-thumb {
+            background-color: var(--active-bg);
+            border-radius: 3px;
+        }
+
+        /* --- CLASES DE PALABRAS Y ESTRUCTURA --- */
+
+        /* Base para todas las palabras */
+        .sentence-span {
+            display: inline-block;
+            margin-right: 5px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-color);
+        }
+
+        .sentence-span:hover {
+            background: rgba(122, 162, 247, 0.1);
+            color: var(--highlight-color);
+        }
+
+        /* Highlight Activo */
+        .active {
+            background-color: var(--active-bg);
+            color: var(--active-text);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(61, 89, 161, 0.4);
+        }
+
+        /* --- ESTILOS DE ESTRUCTURA (Tu lógica) --- */
+
+        /* Títulos Grandes (Concept, Practice Examples...) */
+        .title-style {
+            display: block;
+            /* Salto de línea */
+            width: 100%;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--accent);
+            border-bottom: 2px solid var(--active-bg);
+            padding-bottom: 4px;
+        }
+
+        /* Subtítulos (Example, Mistake, Why...) */
+        .subtitle-style {
+            display: block;
+            /* Salto de línea */
+            width: 100%;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--subtitle);
+            font-style: italic;
+        }
+
+        /* Listas (- • 1.) */
+        .list-style {
+            display: block;
+            /* Salto de línea */
+            width: 100%;
+            margin-left: 20px;
+            /* Indentación */
+            margin-top: 8px;
+            position: relative;
+        }
+
+        /* Pequeño hack para asegurar que el bullet se vea bien si es un bloque */
+        .list-style::before {
+            content: "•";
+            position: absolute;
+            left: -15px;
+            color: var(--highlight-color);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="lyrics" class="text-box"></div>
+        <audio id="player" controls autoplay>
+            <source src="data:audio/mp3;base64,__B64_AUDIO__" type="audio/mp3">
+        </audio>
+    </div>
+
+    <script>
+        const wordMap = __WORD_MAP__;
+        const player = document.getElementById('player');
+        const lyrics = document.getElementById('lyrics');
+
+        // Variable para controlar el modo sentencia (parada automática)
+        let stopAtTime = null;
+
+        // --- RENDERIZADO CON TU LÓGICA ---
+        wordMap.forEach((w, i) => {
+            const rawText = w.word;
+            // Limpieza
+            const cleanText = rawText.trim().replace(/#/g, '').replace(/\*/g, '').trim();
+
+            const s = document.createElement('span');
+            // ID simplificado para que coincida con el sistema de navegación
+            s.id = `w-${i}`;
+            s.className = 'sentence-span';
+            s.innerText = cleanText + " ";
+
+            // Click para reproducir
+            s.onclick = (e) => {
+                e.stopPropagation();
+                stopAtTime = null; // Si hace click manual, cancelamos el "freno" automático
+                player.currentTime = w.start;
+                player.play();
+            };
+
+            // --- DETECCIÓN DE ESTRUCTURA (Tu lógica insertada) ---
+            if (
+                cleanText.startsWith("Concept") ||
+                cleanText.startsWith("Practice Examples") ||
+                cleanText.startsWith("Common Mistakes") ||
+                cleanText.startsWith("Practice Exercises") ||
+                cleanText.startsWith("Pro Tip") ||
+                cleanText.startsWith("Resumen") ||
+                cleanText.startsWith("Lesson Topic") ||
+                cleanText.startsWith("Vocabulary Building") ||
+                cleanText.startsWith("Grammar Practice") ||
+                cleanText.startsWith("For example") ||
+                cleanText.startsWith("Lesson Plan") ||
+                cleanText.startsWith("Now, let's practice!") ||
+                cleanText.startsWith("Let's take a at some examples:") ||
+                cleanText.startsWith("##")
+            ) {
+                s.classList.add('title-style');
+            }
+            else if (
+                cleanText.startsWith("Can you") ||
+                cleanText.startsWith("Example") ||
+                cleanText.startsWith("Mistake") ||
+                cleanText.startsWith("Exercise") ||
+                cleanText.startsWith("Why") ||
+                cleanText.startsWith("When") ||
+                cleanText.startsWith("What") ||
+                cleanText.startsWith("Where") ||
+                cleanText.startsWith("How") ||
+                cleanText.startsWith("Who") ||
+                cleanText.startsWith("Objective:") ||
+                cleanText.startsWith("Task:") ||
+                cleanText.startsWith("Warm-up")
+            ) {
+                s.classList.add('subtitle-style');
+            }
+            else if (cleanText.startsWith("-") || cleanText.startsWith("•") || /^\d+\./.test(cleanText)) {
+                s.classList.add('list-style');
+            }
+
+            lyrics.appendChild(s);
+        });
+
+        // --- LÓGICA DE SENTENCIAS (Puntuación) ---
+        const sentenceEnders = /[.?!:]$/;
+
+        function getSentenceBounds(currentIndex) {
+            if (currentIndex < 0) return { start: 0, end: 0 };
+
+            // Buscar Inicio
+            let startIdx = 0;
+            for (let i = currentIndex - 1; i >= 0; i--) {
+                const word = wordMap[i].word.trim();
+                if (sentenceEnders.test(word)) {
+                    startIdx = i + 1;
+                    break;
+                }
+            }
+            // Buscar Final
+            let endIdx = wordMap.length - 1;
+            for (let i = currentIndex; i < wordMap.length; i++) {
+                const word = wordMap[i].word.trim();
+                if (sentenceEnders.test(word)) {
+                    endIdx = i;
+                    break;
+                }
+            }
+
+            return {
+                startTime: wordMap[startIdx].start,
+                endTime: wordMap[endIdx].end
+            };
+        }
+
+        // --- LOOP DE REPRODUCCIÓN ---
+        player.ontimeupdate = () => {
+            const t = player.currentTime;
+
+            // Freno automático (Modo Sentencia)
+            if (stopAtTime !== null && t >= stopAtTime) {
+                player.pause();
+                stopAtTime = null;
+                return;
+            }
+
+            const activeIdx = wordMap.findIndex(item => t >= item.start && t < item.end);
+
+            // Limpieza visual
+            const currentActive = document.querySelector('.active');
+            if (currentActive && currentActive.id !== 'w-' + activeIdx) {
+                currentActive.classList.remove('active');
+            }
+
+            if (activeIdx !== -1) {
+                const el = document.getElementById('w-' + activeIdx);
+                if (el && !el.classList.contains('active')) {
+                    el.classList.add('active');
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            }
+        };
+
+        // --- CONTROL POR TECLADO ---
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+
+            let idx = wordMap.findIndex(item => player.currentTime >= item.start && player.currentTime < item.end);
+            if (idx === -1) {
+                const next = wordMap.findIndex(item => item.start > player.currentTime);
+                idx = next === -1 ? wordMap.length - 1 : Math.max(0, next - 1);
+            }
+
+            switch (e.key) {
+                case 'ArrowLeft':
+                    if (wordMap[idx - 1]) player.currentTime = wordMap[idx - 1].start;
+                    stopAtTime = null; player.pause();
+                    break;
+
+                case 'ArrowRight':
+                    if (wordMap[idx + 1]) player.currentTime = wordMap[idx + 1].start;
+                    stopAtTime = null; player.pause();
+                    break;
+
+                case ' ':
+                    e.preventDefault();
+                    stopAtTime = null;
+                    player.paused ? player.play() : player.pause();
+                    break;
+
+                case 'Enter':
+                case 'r':
+                case 'R':
+                    e.preventDefault();
+                    const bounds = getSentenceBounds(idx);
+                    player.currentTime = bounds.startTime;
+                    stopAtTime = bounds.endTime; // Activar freno al final de la frase
+                    player.play();
+                    break;
+            }
+        });
+    </script>
+</body>
+
+</html>

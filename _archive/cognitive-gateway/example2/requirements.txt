@@ -1,0 +1,11 @@
+temporalio==1.7.0
+openai==1.52.0
+python-dotenv==1.0.1
+requests==2.32.3
+pydantic==2.9.2
+aiohttp==3.10.8
+tiktoken==0.7.0
+chromadb==0.5.5
+langchain==0.3.7
+langchain-openai==0.2.6
+langchain-community==0.3.7

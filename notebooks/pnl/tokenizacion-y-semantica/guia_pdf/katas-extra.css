@@ -1,0 +1,58 @@
+/* ============================================================
+   Overrides para KATAS — estructura y anti-clipping de código
+   Se carga DESPUÉS de style.css
+   ============================================================ */
+
+/* --- Código: nunca recortar. Envolver en vez de clipear. --- */
+pre {
+  font-size: 8pt;
+  line-height: 1.4;
+  white-space: pre-wrap;       /* envuelve líneas largas en vez de cortarlas */
+  word-wrap: break-word;
+  overflow-x: visible;         /* anula el overflow:auto que clipea en papel */
+  overflow-wrap: anywhere;
+}
+pre code {
+  font-size: 8pt;
+  white-space: pre-wrap;
+}
+
+/* --- Estructura: cada Bloque y cada Kata empieza en página nueva --- */
+h2 {
+  page-break-before: always;
+  page-break-after: avoid;
+  border-bottom: 2px solid #F06105;
+  padding-bottom: 4pt;
+}
+h3 {
+  page-break-before: always;
+  page-break-after: avoid;
+}
+/* el primer h2 (justo tras el resumen) no necesita salto extra forzado,
+   pero mantenerlo es inofensivo y da una portada de sección limpia. */
+
+/* Encabezado de subsección dentro de la kata: que no quede huérfano */
+h4 {
+  page-break-after: avoid;
+  color: #0a2540;
+}
+
+/* --- Tablas: que no se desborden del ancho de página --- */
+table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 9pt;
+  page-break-inside: avoid;
+}
+th, td {
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
+/* Bloques de cita (notas / anti-patrón) que no se partan feo */
+blockquote { page-break-inside: avoid; }
+
+/* Evita que un título de kata quede al final de página sin contenido */
+h3 + p, h4 + p { page-break-before: avoid; }

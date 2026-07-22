@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Introducción a AWS Academy: ML Foundations</title>
+    <meta charset="utf-t"/>
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+# Introducción a AWS Academy: Machine Learning Foundations - Módulo 3
+
+---
+name: bienvenida
+
+## Bienvenida
+
+¡Bienvenidos, estudiantes de la Maestría en Desarrollo de Aplicaciones Inteligentes!
+
+Esta presentación es una introducción al Módulo 3 del curso **Machine Learning Foundations** de AWS Academy.
+
+El objetivo es darles un panorama de los temas que abordarán y los talleres que realizarán como parte del curso de **Ciencia de Datos**.
+
+---
+name: agenda
+
+## Agenda
+
+1. [El Proceso de Machine Learning](#proceso-ml)
+2. [Formulación de un Problema de ML](#formulacion)
+3. [Métricas de Clasificación](#metricas)
+4. [Descripción de los Talleres](#talleres)
+5. [Conclusión](#conclusion)
+
+---
+name: proceso-ml
+
+## El Proceso de Machine Learning en AWS
+
+El Módulo 3 los guiará a través del ciclo de vida completo de un proyecto de ML.
+
+**Temas teóricos:**
+
+- **Formulación del Problema**
+- **Recolección y Preparación de Datos (ETL)**
+- **Análisis y Preprocesamiento**
+- **Entrenamiento del Modelo con Amazon SageMaker**
+- **Optimización de Modelos**
+- **Evaluación y Despliegue**
+
+---
+name: formulacion
+
+### Profundizando: ¿Cómo Formular un Problema de ML?
+
+Formular el problema correctamente es el paso más crítico para el éxito del proyecto.
+
+---
+
+### 1. Definir el Objetivo de Negocio (¿Para qué?)
+
+- Antes de programar, debemos entender el "porqué". ¿Qué se busca mejorar?
+- **Ejemplo**: "Mejorar la detección de anormalidades en pacientes de ortopedia para ofrecer un tratamiento más rápido y efectivo."
+
+--
+
+### 2. Traducir a una Tarea de ML (¿Cómo?)
+
+- **Clasificación (¿A qué categoría pertenece?)**
+  - Predecir una etiqueta: `Anormal` vs. `Normal`.
+  - **Es el caso de sus talleres.**
+
+- **Regresión (¿Cuánto o qué valor?)**
+  - Predecir un número: el precio de una casa.
+
+- **Clustering (¿Cómo se agrupan?)**
+  - Encontrar grupos naturales: segmentar clientes.
+
+---
+
+### 3. Identificar la Variable Objetivo (¿Qué predecir?)
+
+- Es la respuesta que queremos que el modelo aprenda a predecir.
+- **Ejemplo del taller**: La columna `class`, que indica si el diagnóstico es `Anormal` (1) o `Normal` (0).
+
+--
+
+### 4. Determinar las *Features* (¿Con qué datos?)
+
+- Son las variables de entrada que el modelo usará para la predicción.
+- **Ejemplo del taller**: Las 6 características biomecánicas (incidencia pélvica, etc.).
+
+---
+
+### 5. Definir las Métricas de Éxito (¿Cuán bueno es?)
+
+- **Métricas Técnicas**:
+  - Dependen del problema: *Accuracy*, *Precision*, *Recall*, *AUC*.
+  - El **AUC** se usa en el Taller 4.
+
+- **Métricas de Negocio**:
+  - Traducen el rendimiento a un impacto real.
+  - "Un modelo con 95% de exactitud reducirá los diagnósticos erróneos en un 40%".
+
+---
+name: metricas
+
+### Detalle de Métricas: La Matriz de Confusión
+
+|                | Predicción: Normal | Predicción: Anormal |
+| :------------- | :---: | :---: |
+| **Real: Normal**   |     Verdadero Negativo (TN)    |   Falso Positivo (FP)   |
+| **Real: Anormal** |     Falso Negativo (FN)    |  Verdadero Positivo (TP)  |
+
+- **FP (Falsa Alarma):** Dices "Anormal" a un paciente sano. Costo: ansiedad, pruebas innecesarias.
+- **FN (Error Peligroso):** Dices "Normal" a un paciente enfermo. **Costo: altísimo, la enfermedad progresa sin tratamiento.**
+
+---
+
+### Accuracy (Exactitud)
+
+**¿Qué es?** El porcentaje total de predicciones correctas.
+
+`Accuracy = (TP + TN) / Total`
+
+- **Cuándo usarla:** Cuando las clases están balanceadas (ej. 50% sanos, 50% enfermos) y el costo de los errores FP y FN es similar.
+- **Cuándo NO usarla (¡Cuidado!):** En datos desbalanceados. Si el 99% de los pacientes son sanos, un modelo que siempre predice "Sano" tendrá 99% de accuracy, pero será inútil porque nunca detectará a un enfermo (tendrá 0% de Recall).
+
+---
+
+### Precision (Precisión)
+
+**¿Qué es?** De todos los que clasificaste como `Anormal`, ¿cuántos realmente lo eran?
+
+`Precision = TP / (TP + FP)`
+
+- **Enfoque:** Minimizar las **falsas alarmas (FP)**.
+- **Cuándo usarla:** Cuando el costo de un Falso Positivo es alto.
+  - **Ejemplo 1:** Un filtro de SPAM. Prefieres que se te cuele un correo de spam (FN) a que un correo importante vaya a la carpeta de no deseados (FP).
+  - **Ejemplo 2:** En marketing, al enviar una oferta cara a clientes "VIP". No quieres enviarla a clientes que no lo son (FP).
+
+---
+
+### Recall (Sensibilidad o Cobertura)
+
+**¿Qué es?** De todos los que **realmente** eran `Anormal`, ¿a cuántos lograste identificar?
+
+`Recall = TP / (TP + FN)`
+
+- **Enfoque:** Minimizar los **errores peligrosos (FN)**.
+- **Cuándo usarla:** Cuando el costo de un Falso Negativo es altísimo.
+  - **Ejemplo 1 (¡Este es tu caso!):** Detección de enfermedades. Es mucho peor no detectar a un enfermo (FN) que hacerle una prueba extra a un sano (FP).
+  - **Ejemplo 2:** Detección de transacciones fraudulentas. Es preferible revisar una transacción legítima (FP) a dejar pasar un fraude real (FN).
+
+---
+
+### AUC (Área Bajo la Curva ROC)
+
+**¿Qué es?** Es una métrica que evalúa qué tan bien el modelo puede **distinguir** entre las clases (sanos vs. enfermos).
+
+- **Intuición:** Si tomas un paciente enfermo y uno sano al azar, el AUC es la probabilidad de que tu modelo le dé una puntuación de "riesgo" más alta al enfermo.
+- **Valor:** Va de 0.5 (inútil, como lanzar una moneda) a 1.0 (perfecto).
+
+- **Cuándo usarla:**
+  - Es la métrica **preferida para datos desbalanceados**.
+  - Mide el rendimiento del modelo a través de todos los umbrales de clasificación posibles, dándote una visión global de su capacidad de discriminación.
+  - Por eso es una métrica tan robusta y se usa en el Taller 4.
+
+---
+
+### Resumen: ¿Qué Métrica Elegir?
+
+- **Accuracy:** Para datos balanceados y errores de igual costo.
+- **Precision:** Si las **Falsas Alarmas (FP)** son tu principal preocupación.
+- **Recall:** Si los **Errores Peligrosos (FN)** son inaceptables (como en tu taller).
+- **AUC:** Excelente para datos desbalanceados y para tener una medida general de la capacidad de separación del modelo.
+
+---
+
+### 6. Considerar las Restricciones
+
+- **Latencia**: ¿La predicción debe ser instantánea o puede tardar horas?
+- **Interpretabilidad**: ¿Necesitamos entender *por qué* el modelo toma una decisión?
+- **Costo**: ¿Cuánto cuesta obtener los datos y entrenar el modelo?
+
+---
+name: talleres
+
+## Descripción de los Talleres Prácticos
+
+Realizarán 4 talleres para implementar una solución de ML paso a paso.
+
+---
+
+### Taller 1: Carga y Exploración de Datos
+#### `Laboratorio-3.1.py`
+
+- **Objetivo**: Cargar datos desde una fuente externa a Python.
+- **Actividades**:
+  - Descargar y extraer datos (`.zip`).
+  - Cargar datos (`.arff`) en un DataFrame de `pandas`.
+  - Realizar una primera inspección.
+
+---
+
+### Taller 2: Análisis Exploratorio de Datos (EDA)
+#### `3_2-machinelearning.py`
+
+- **Objetivo**: Analizar y visualizar el dataset para encontrar patrones y correlaciones.
+- **Actividades**:
+  - Usar `.describe()`, `.value_counts()`.
+  - Crear visualizaciones (histogramas, box plots, matrices de correlación).
+  - Convertir la clase objetivo a formato numérico.
+
+---
+
+### Taller 3: Preprocesamiento de Datos
+#### `3_3-machinelearning.py`
+
+- **Objetivo**: Transformar variables categóricas en numéricas.
+- **Actividades**:
+  - **Codificación Ordinal**: Para categorías con orden (ej. "dos", "cuatro" cilindros).
+  - **One-Hot Encoding**: Para categorías sin orden (ej. tipo de tracción "fwd", "rwd").
+
+---
+
+### Taller 4: Entrenamiento con Amazon SageMaker
+#### `3_4-machinelearning.py`
+
+- **Objetivo**: Entrenar un modelo de clasificación (XGBoost) usando **Amazon SageMaker**.
+- **Actividades**:
+  - Dividir datos (entrenamiento, validación, prueba).
+  - Subir los datos a **Amazon S3**.
+  - Configurar y lanzar un trabajo de entrenamiento en SageMaker.
+
+---
+name: conclusion
+
+## Conclusión
+
+Al finalizar estos talleres, habrán completado un ciclo de vida de Machine Learning simplificado pero completo.
+
+Habrán pasado de tener datos crudos a un modelo entrenado en la nube.
+
+**¡Mucho éxito en los laboratorios!**
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>

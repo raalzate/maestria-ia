@@ -1,0 +1,26 @@
+# Artefactos pesados
+artifacts/
+*.bin
+*.safetensors
+*.pt
+*.ckpt
+
+# Caches
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.cache/
+.pytest_cache/
+
+# Entornos
+.venv/
+venv/
+venv_gec/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store

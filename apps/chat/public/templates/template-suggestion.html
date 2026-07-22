@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhonoSync Coach - Iframe Dark</title>
+    <style>
+        :root {
+            --bg-color: #1a1b26;
+            --card-bg: #24283b;
+            --text-color: #a9b1d6;
+            --highlight-color: #7aa2f7;
+            --active-bg: #3d59a1;
+            --active-text: #ffffff;
+            --accent: #bb9af7;
+            --subtitle: #7dcfff;
+            --phonetic-color: #565f89;
+            --phonetic-bg: #1f2335;
+        }
+
+        /* RESET PARA IFRAME */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+            /* Prohibir scroll horizontal */
+            background-color: transparent;
+            /* O el color que prefieras */
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 10px;
+            /* Padding pequeño para iframe */
+        }
+
+        /* SCROLLBAR ESTILIZADA (Vertical) */
+        ::-webkit-scrollbar {
+            width: 6px;
+            /* Más delgada para iframe */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--active-bg);
+            border-radius: 3px;
+        }
+
+        main {
+            width: 100%;
+            /* Importante: evitar anchos fijos en px dentro de un iframe */
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- COMPONENTES --- */
+
+        .section-header {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            border-bottom: 2px solid var(--active-bg);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        /* CONTENEDOR DE FRASE */
+        .sentence-row {
+            display: flex;
+            flex-wrap: wrap;
+            /* CRUCIAL: Permite que los elementos caigan a la siguiente línea */
+            gap: 12px;
+            /* Espacio entre palabras */
+            padding: 16px;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid rgba(122, 162, 247, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+
+            /* Asegurar que el contenedor no fuerce el ancho */
+            width: 100%;
+            box-sizing: border-box;
+            word-break: break-word;
+            /* Romper palabras largas si es necesario */
+        }
+
+        /* BLOQUE INDIVIDUAL */
+        .word-block {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Centrar fonética con palabra */
+            cursor: pointer;
+            transition: transform 0.2s ease;
+
+            /* Lógica de ancho máximo para evitar desbordes */
+            max-width: 100%;
+        }
+
+        .word-block:hover {
+            transform: translateY(-2px);
+        }
+
+        /* TEXTO DE LA PALABRA */
+        .word-text {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 4px;
+            font-weight: 500;
+            text-align: center;
+
+            /* SOLUCIÓN AL PROBLEMA DE TEXTO LARGO */
+            white-space: pre-wrap;
+            /* Respeta saltos pero hace wrap automático */
+            word-wrap: break-word;
+            /* Rompe palabras si son muy largas */
+            overflow-wrap: break-word;
+            /* Estándar moderno */
+            max-width: 100%;
+            /* Nunca más ancho que el padre */
+            line-height: 1.4;
+        }
+
+        .word-block:hover .word-text {
+            color: var(--highlight-color);
+        }
+
+        .word-block.playing .word-text {
+            color: var(--active-text);
+            text-shadow: 0 0 12px var(--highlight-color);
+        }
+
+        /* FONÉTICA */
+        .phonetic-text {
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--subtitle);
+            background-color: var(--phonetic-bg);
+            border: 1px solid rgba(125, 207, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+
+            /* Evitar que la fonética rompa la maquetación */
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .word-block:hover .phonetic-text {
+            background-color: rgba(61, 89, 161, 0.4);
+            border-color: var(--highlight-color);
+            color: var(--highlight-color);
+        }
+
+        .save-icon {
+            font-size: 0.8rem;
+            opacity: 0;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+
+        .word-block:hover .save-icon {
+            opacity: 1;
+        }
+
+        .save-icon.saved {
+            opacity: 1;
+            filter: hue-rotate(90deg);
+            /* Greenish */
+        }
+
+        .save-icon.saved {
+            opacity: 1;
+            filter: hue-rotate(90deg);
+            /* Greenish */
+        }
+
+        /* TOAST NOTIFICATION */
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: var(--active-bg);
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 10px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <div id="contentContainer"></div>
+    </main>
+
+    <div id="toast">Saved!</div>
+
+    <script>
+        // Data injected from Python
+        const SUGGESTIONS = __SUGGESTIONS_JSON__;
+
+        const els = {
+            container: document.getElementById('contentContainer')
+        };
+
+        function init() {
+            renderContent();
+        }
+
+        async function playAudio(text, blockElement) {
+            if (!text) return;
+            if (blockElement) blockElement.classList.add('playing');
+
+            const cleanText = text.replace(/[^a-zA-Z0-9\s]/g, '');
+            if (!cleanText) {
+                if (blockElement) blockElement.classList.remove('playing');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/tts?text=${encodeURIComponent(text)}`);
+                const data = await response.json();
+
+                if (data.url) {
+                    const audio = new Audio(data.url);
+                    audio.onended = () => { if (blockElement) blockElement.classList.remove('playing'); };
+                    audio.onerror = () => { if (blockElement) blockElement.classList.remove('playing'); };
+                    await audio.play();
+                } else {
+                    if (blockElement) blockElement.classList.remove('playing');
+                }
+            } catch (err) {
+                console.error("TTS Error:", err);
+                if (blockElement) blockElement.classList.remove('playing');
+            }
+        }
+
+        async function savePhrase(text, iconElement, event) {
+            event.stopPropagation();
+            if (!text) return;
+
+            try {
+                const response = await fetch('/api/save_phrase', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    iconElement.classList.add('saved');
+                    iconElement.title = "Saved!";
+                    showToast(`Saved: "${text}"`);
+                }
+            } catch (err) {
+                console.error("Save Error:", err);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = "show";
+            setTimeout(function () { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        function renderContent() {
+            els.container.innerHTML = '';
+
+            if (!SUGGESTIONS || !Array.isArray(SUGGESTIONS)) {
+                els.container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-color);">No content loaded.</div>';
+                return;
+            }
+
+            SUGGESTIONS.forEach(item => {
+                const groupDiv = document.createElement('div');
+
+                // Header
+                if (item.type) {
+                    const headerDiv = document.createElement('div');
+                    headerDiv.textContent = item.type;
+                    headerDiv.className = "section-header";
+                    groupDiv.appendChild(headerDiv);
+                }
+
+                // Sentence Row (Tarjeta)
+                const sentenceRow = document.createElement('div');
+                sentenceRow.className = "sentence-row";
+
+                if (item.breakdown && Array.isArray(item.breakdown)) {
+                    item.breakdown.forEach(token => {
+                        const wordBlock = document.createElement('div');
+                        wordBlock.className = "word-block";
+
+                        const word = token.word || "";
+                        const phonetic = token.phonetic || "";
+
+                        // Create elements programmatically for safety
+                        const saveIcon = document.createElement('span');
+                        saveIcon.className = "save-icon";
+                        saveIcon.textContent = "🔖";
+                        saveIcon.title = "Save Phrase";
+                        saveIcon.onclick = (e) => savePhrase(word, saveIcon, e);
+
+                        const wordText = document.createElement('span');
+                        wordText.className = "word-text";
+                        wordText.textContent = word;
+
+                        wordBlock.appendChild(saveIcon);
+                        wordBlock.appendChild(wordText);
+
+                        if (phonetic) {
+                            const phoneticSpan = document.createElement('span');
+                            phoneticSpan.className = "phonetic-text";
+                            phoneticSpan.textContent = phonetic;
+                            wordBlock.appendChild(phoneticSpan);
+                        }
+
+                        wordBlock.onclick = (e) => {
+                            // Don't play audio if clicking save
+                            if (e.target.classList.contains('save-icon')) return;
+                            playAudio(word, wordBlock);
+                        };
+                        sentenceRow.appendChild(wordBlock);
+                    });
+                }
+
+                groupDiv.appendChild(sentenceRow);
+                els.container.appendChild(groupDiv);
+            });
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

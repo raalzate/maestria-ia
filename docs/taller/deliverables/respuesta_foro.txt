@@ -1,0 +1,9 @@
+Re: Investigación de Usuarios
+
+Algo que me está cayendo en el peso del curso: las heurísticas son útiles pero responden hacia adelante (yo diseñador → producto). La investigación de usuarios va al revés (usuario real → producto). Cuando solo aplicas heurísticas, terminas diseñando para ti mismo y proyectando suposiciones sobre el usuario.
+
+Un caso concreto del proyecto que estoy armando: una interfaz para un chatbot bancario. La heurística "visibilidad del estado del sistema" suena obvia, pero hasta que no entrevistas a un auditor de servicio al cliente no entiendes que para él "visibilidad" no es un spinner — es un log auditable que pueda mostrarle a compliance. Sin esa conversación, cumples la heurística en apariencia y la incumples en función.
+
+Las cognotécnicas (diagramas de afinidad, personas) son justo lo que evita que proyectemos nuestros sesgos sobre el usuario.
+
+¿A alguien le ha pasado que una heurística "bien aplicada" chocó con un hallazgo cualitativo? ¿Cómo lo resolvieron?
