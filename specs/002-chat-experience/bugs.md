@@ -224,3 +224,20 @@ causado por el propio prompt):
   Filtrado en la FUENTE (bufferGrammar) + defensa en finishSession/buildLesson.
 - Correcciones a una línea: “original” → **“mejor”** _(tipo)_ (el salto suave
   de markdown se renderizaba como espacio).
+
+14ª ronda (la lección era un callejón sin salida; nueva directriz de idioma):
+- DIRECTRIZ actualizada (dueño del producto): la intervención de Emma es EN
+  INGLÉS y SIEMPRE con audio; la ayuda en español es un botón aparte.
+  `build-lesson-use-case` genera la lección en inglés hablado (apta para TTS).
+- El dialog de lección ahora SIEMPRE tiene acciones: 🔊 "Escuchar a Emma"
+  (useKaraoke con la voz reservada en-US-EmmaNeural), 🌐 "Ayuda en español"
+  (reutiliza el TranslateDialog), 🔁 "Practicar de nuevo" (misma escena,
+  sesión nueva) y ➡️ "Siguiente: {título}" (escenario recomendado por la ruta
+  vía recommendNext — el pathway queda conectado al cierre).
+- `finishSession` devuelve `{report, lesson}` para poder dar audio/traducción
+  de la lección por separado.
+- Sesión completada = solo lectura: `ChatConversation.completed` persiste; al
+  reabrir, el composer muestra "Esta sesión ya terminó…" y NO se re-dispara la
+  lección automática (se puede revisar con el botón).
+- Botón renombrado: "Terminar" → "Finalizar y ver lección" (con estado
+  "Evaluando…").
