@@ -197,3 +197,17 @@ causado por el propio prompt):
   (promoción de nivel o aspectos a mejorar), `markPassed` y recomendación del
   siguiente escenario. Antes era solo manual (botón Terminar, que se conserva
   para salir antes).
+
+12ª ronda (lección real de Emma + resumen rediseñado + transición suave):
+- Nuevo `build-lesson-use-case.ts`: Emma (LLM) escribe la lección en ESPAÑOL —
+  por qué está mal cada error, la regla y ejemplos correctos en inglés, con
+  mini-reto — validada en el borde; null ⇒ respaldo determinista (LESSON_TIPS).
+- Nuevo `session-summary.ts` (dominio): markdown por secciones en español, sin
+  tablas (se renderizaban rotas): 🏁 cabecera con métricas, ✏️ correcciones
+  numeradas (dijiste → mejor), 📚 lección, 🎯 siguiente paso con práctica
+  recomendada. `finishSession` lo usa; `buildFeedbackReport` (paridad Python)
+  se conserva exportado con sus pruebas.
+- Transición: al completar la escena el composer se reemplaza por el banner
+  "Escena completada — Emma está preparando tu lección…" (ya no es un modal
+  que aparece de golpe) y el dialog pasa a "🎓 Tu lección con Emma" con
+  descripción.
