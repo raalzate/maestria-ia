@@ -211,3 +211,16 @@ causado por el propio prompt):
   "Escena completada — Emma está preparando tu lección…" (ya no es un modal
   que aparece de golpe) y el dialog pasa a "🎓 Tu lección con Emma" con
   descripción.
+
+13ª ronda (markdown plano y corrección basura en la lección):
+- CAUSA del "mal diseño": `@tailwindcss/typography` NUNCA estuvo instalado —
+  todas las clases `prose` del app eran letra muerta (headings/listas sin
+  estilo en la lección, Teach me y traducciones). Instalado y registrado en
+  `tailwind.config.ts`.
+- Nuevo `isActionableCorrection` (domain/chat/silent-error): filtra las
+  meta-respuestas del checker ("(No correction needed for this input.)",
+  "no change", "already correct", paréntesis puro) que entraban al búfer,
+  inflaban la métrica y contaminaban la lección con reglas inventadas.
+  Filtrado en la FUENTE (bufferGrammar) + defensa en finishSession/buildLesson.
+- Correcciones a una línea: “original” → **“mejor”** _(tipo)_ (el salto suave
+  de markdown se renderizaba como espacio).
