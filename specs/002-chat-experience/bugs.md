@@ -241,3 +241,24 @@ causado por el propio prompt):
   lección automática (se puede revisar con el botón).
 - Botón renombrado: "Terminar" → "Finalizar y ver lección" (con estado
   "Evaluando…").
+
+15ª ronda (variación de escenarios, dos componentes metodológicos, caso real):
+- ROTACIÓN de situaciones: el selector era determinista (primera compatible) y
+  siempre salía la misma variante. Ahora se recuerdan las últimas 3 jugadas por
+  escenario (localStorage) y se excluyen; pool vacío ⇒ reintenta sin exclusión.
+- Bug latente corregido: la antesala y el kickoff seleccionaban la situación
+  POR SEPARADO (openScenario re-seleccionaba); ahora el kickoff usa exactamente
+  la situación/contrato que el usuario leyó.
+- Dialog metodológico en DOS componentes: (1) Enseñanza — correcciones +
+  lección de Emma con audio/ayuda ES; (2) Decisión de Emma — visible en el
+  dialog (antes solo toast): sube de nivel / escenario superado / repetir para
+  consolidar, con la sugerencia de ruta. Subtítulo con la sesión vivida
+  (escenario · situación · nivel). Render robusto (div overflow en vez de
+  ScrollArea, placeholder si la lección aún carga).
+- "Siguiente" nunca recomienda el escenario recién jugado (si la ruta coincide,
+  rota al siguiente del catálogo del nivel).
+- Título de la sesión en la barra: "Escenario · Situación" (dos "Daily Standup"
+  no distinguían qué se vivió).
+- Contrato de escena más rico: 4 líneas de caso real (proyecto/equipo/sprint
+  con nombre, qué pasó ayer, qué está en juego hoy con hora/fecha, y la
+  complicación del caso).
